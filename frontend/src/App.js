@@ -10,8 +10,6 @@ import Unauthorized from './pages/Unauthorized';
 
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Importing custom CSS (if any)
-import './App.css';
 
 function App() {
   return (

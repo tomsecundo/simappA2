@@ -15,13 +15,14 @@ const NavbarComponent = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">Startup Incubation System</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">Startup Incubation</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {user && (
               <>
                 <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
+                <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
                 <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
               </>
             )}
@@ -29,6 +30,7 @@ const NavbarComponent = () => {
           <Nav>
             {!user ? (
               <>
+                <Nav.Link as={Link} to="/applications/apply" className="bg-green-500 px-4 py-2 mx-2 rounded hover:bg-green-700 text-black">Apply for Program</Nav.Link>
                 <Nav.Link as={Link} to="/login">Login</Nav.Link>
                 <Nav.Link as={Link} to="/register">Register</Nav.Link>
               </>
