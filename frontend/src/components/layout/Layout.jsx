@@ -6,7 +6,7 @@ const Layout = ({ children }) => {
   return (
     <>
       <Navbar />
-      <Container className="py-4">
+      <Container fluid className="py-4">
         {children}
       </Container>
     </>

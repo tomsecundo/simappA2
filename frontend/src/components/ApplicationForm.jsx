@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axiosInstance from '../axiosConfig';
+import { Form, Button, Alert, Container } from 'react-bootstrap';
 
 const ApplicationForm = () => {
 
@@ -39,80 +40,75 @@ const ApplicationForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
+    <Container className="mt-4" style={{ maxWidth: 720 }}>
 
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          Application submitted successfully! We'll contact you soon.
-        </div>
+        <Alert variant="success">Application submitted successfully! We'll contact you soon.</Alert>
       )}
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
+        <Alert variant="danger">{error}</Alert>
       )}
 
-      <h1 className="text-3xl font-bold mb-6 text-center">Startup Incubation Application</h1>
-      <p className="text-gray-600 mb-8 text-center">
+      <h1 className="text-3xl font-bold mb-3 text-center">Startup Incubation Application</h1>
+      <p className="text-gray-600 mb-4 text-center">
         Complete the form below to submit your application for our startup incubation program.
       </p>
+      <Form onSubmit={handleSubmit} className="bg-white p-4 rounded mb-4">
+        <Form.Group className="mb-3" controlId="startupName">
+          <Form.Control
+            type="text"
+            placeholder="Startup Name"
+            value={formData.startupName}
+            onChange={(e) => setFormData({ ...formData, startupName: e.target.value })}
+            required
+          />
+        </Form.Group>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded mb-6">
-        <input
-          type="text"
-          placeholder="Startup Name"
-          value={formData.startupName}
-          onChange={(e) => setFormData({ ...formData, startupName: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          required
-        />
-        
-        <input
-          type="text"
-          placeholder="Program Applied For"
-          value={formData.programApplied}
-          onChange={(e) => setFormData({ ...formData, programApplied: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          required
-        />
-        
-        <input
-          type="email"
-          placeholder="Contact Email"
-          value={formData.applicationEmail}
-          onChange={(e) => setFormData({ ...formData, applicationEmail: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          required
-        />
-        
-        <input
-          type="tel"
-          placeholder="Contact Phone"
-          value={formData.applicationPhone}
-          onChange={(e) => setFormData({ ...formData, applicationPhone: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          required
-        />
-        
-        <textarea
-          placeholder="Application Description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          rows="4"
-          required
-        ></textarea>
-        
-        <button 
-          type="submit" 
-          className="w-full bg-blue-600 text-white p-2 rounded"
-          disabled={loading}
-        >
+        <Form.Group className="mb-3" controlId="programApplied">
+          <Form.Control
+            type="text"
+            placeholder="Program Applied For"
+            value={formData.programApplied}
+            onChange={(e) => setFormData({ ...formData, programApplied: e.target.value })}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="applicationEmail">
+          <Form.Control
+            type="email"
+            placeholder="Contact Email"
+            value={formData.applicationEmail}
+            onChange={(e) => setFormData({ ...formData, applicationEmail: e.target.value })}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="applicationPhone">
+          <Form.Control
+            type="tel"
+            placeholder="Contact Phone"
+            value={formData.applicationPhone}
+            onChange={(e) => setFormData({ ...formData, applicationPhone: e.target.value })}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="description">
+          <Form.Control
+            as="textarea"
+            rows={4}
+            placeholder="Application Description"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            required
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit" disabled={loading} className="w-100">
           {loading ? 'Saving...' : 'Submit Application'}
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Form>
+    </Container>
   );
 };
 

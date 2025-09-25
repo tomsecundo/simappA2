@@ -50,12 +50,12 @@ const Applications = () => {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container-fluid mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Applications</h1>
         <div className="flex items-center">
           <label htmlFor="statusFilter" className="mr-2">Filter by Status:</label>
-          <select 
+          <select
             id="statusFilter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}

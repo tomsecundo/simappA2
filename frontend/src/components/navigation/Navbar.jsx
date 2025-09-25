@@ -14,7 +14,7 @@ const NavbarComponent = () => {
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
-      <Container>
+      <Container fluid>
         <Navbar.Brand as={Link} to="/">Startup Incubation</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -35,7 +35,10 @@ const NavbarComponent = () => {
                 <Nav.Link as={Link} to="/register">Register</Nav.Link>
               </>
             ) : (
-              <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              <>
+                <Nav.Link as={Link} to="/#" >Logout</Nav.Link>
+                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              </>
             )}
           </Nav>
         </Navbar.Collapse>
