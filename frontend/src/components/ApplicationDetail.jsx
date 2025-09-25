@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../axiosConfig';
+import axiosInstance from '../services/axiosConfig';
 import RequireAuth from '../components/RequireAuth';
-import DeleteApplicationButton from './DeleteApplicationButton';
+import DeleteApplicationButton from '../common/DeleteApplicationButton';
 
 const ApplicationDetail = () => {
   const { id } = useParams();

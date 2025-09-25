@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
+import axiosInstance from '../services/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import { Button, Alert } from 'react-bootstrap';
 

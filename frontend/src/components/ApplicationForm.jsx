@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axiosInstance from '../axiosConfig';
+import axiosInstance from '../services/axiosConfig';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 
 const ApplicationForm = () => {

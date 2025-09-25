@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../axiosConfig';
+import axiosInstance from '../services/axiosConfig';
 import RequireAuth from '../components/RequireAuth';
 import { UserRole } from '../constants/UserRole';
 
