@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { UserRole } from '../constants/UserRole';
 
 const AuthContext = createContext();
 
@@ -32,13 +33,40 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
-  // Check if user is admin
-  const isAdmin = () => {
-    return user && user.role === 'Admin';
+  // Role check helper functions
+  const hasRole = (requiredRole) => {
+    return user && user.role === requiredRole;
+  };
+
+  const isAdmin = () => hasRole(UserRole.ADMIN);
+  const isMentor = () => hasRole(UserRole.MENTOR);
+  const isApplicant = () => hasRole(UserRole.APPLICANT);
+
+  // Check if user has any of the required roles
+  const hasAnyRole = (requiredRoles) => {
+    return user && requiredRoles.includes(user.role);
+  };
+
+  // Check if user has all of the required roles
+  const hasAllRoles = (requiredRoles) => {
+    return user && requiredRoles.every(role => user.role === role);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        login, 
+        logout, 
+        loading, 
+        isAdmin,
+        isMentor,
+        isApplicant,
+        hasRole,
+        hasAnyRole,
+        hasAllRoles
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

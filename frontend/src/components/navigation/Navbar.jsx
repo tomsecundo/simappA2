@@ -2,9 +2,10 @@ import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { UserRole } from '../../constants/UserRole';
 
 const NavbarComponent = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, hasAnyRole, isAdmin, isMentor } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -21,8 +22,17 @@ const NavbarComponent = () => {
           <Nav className="me-auto">
             {user && (
               <>
-                <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
-                <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
+                {/* Show Applications link only to Admin and Mentor */}
+                {hasAnyRole([UserRole.ADMIN, UserRole.MENTOR]) && (
+                  <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
+                )}
+                
+                {/* Show Startup link only to Admin */}
+                {isAdmin() && (
+                  <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
+                )}
+
+                {/* Profile link is available to all authenticated users */}
                 <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
               </>
             )}
@@ -30,13 +40,21 @@ const NavbarComponent = () => {
           <Nav>
             {!user ? (
               <>
-                <Nav.Link as={Link} to="/applications/apply" className="bg-green-500 px-4 py-2 mx-2 rounded hover:bg-green-700 text-black">Apply for Program</Nav.Link>
+                {/* Show Apply button only to non-authenticated users */}
+                <Nav.Link 
+                  as={Link} 
+                  to="/register" 
+                  className="bg-green-500 px-4 py-2 mx-2 rounded hover:bg-green-700 text-black"
+                >
+                  Register as Applicant
+                </Nav.Link>
                 <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                <Nav.Link as={Link} to="/register">Register</Nav.Link>
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/#" >Logout</Nav.Link>
+                <span className="text-white flex items-center mr-4">
+                  Welcome, {user.fullName} ({user.role})
+                </span>
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </>
             )}
