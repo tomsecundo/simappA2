@@ -67,7 +67,7 @@ const Profile = () => {
     return <div className="text-center mt-20">Loading...</div>;
   }
 
-  const canEditRole = user && user.rrole === UserRole.ADMIN;
+  const canEditRole = user && user.role === UserRole.ADMIN;
 
   return (
     <div className="max-w-md mx-auto mt-20">

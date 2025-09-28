@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
   const isAdmin = () => hasRole(UserRole.ADMIN);
   const isMentor = () => hasRole(UserRole.MENTOR);
-  const isApplicant = () => hasRole(UserRole.APPLICANT);
+  const isStartup = () => hasRole(UserRole.STARTUP);
 
   // Check if user has any of the required roles
   const hasAnyRole = (requiredRoles) => {
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         loading, 
         isAdmin,
         isMentor,
-        isApplicant,
+        isStartup,
         hasRole,
         hasAnyRole,
         hasAllRoles

@@ -31,7 +31,7 @@ function App() {
           <Route 
             path="/applications/:id" 
             element={
-              <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.APPLICANT]}>
+              <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.STARTUP]}>
                 <ProtectedApplicationDetail />
               </RequireRole>
             } 
@@ -39,7 +39,7 @@ function App() {
           <Route 
             path="/applications/apply" 
             element={
-              <RequireRole allowedRoles={[UserRole.APPLICANT]}>
+              <RequireRole allowedRoles={[UserRole.STARTUP]}>
                 <ApplicationForm />
               </RequireRole>
             } 
@@ -47,7 +47,7 @@ function App() {
           <Route 
             path="/profile" 
             element={
-              <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.APPLICANT]}>
+              <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.STARTUP]}>
                 <ProtectedProfile />
               </RequireRole>
             } 

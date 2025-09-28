@@ -53,7 +53,7 @@ const NavbarComponent = () => {
             ) : (
               <>
                 <span className="text-white flex items-center mr-4">
-                  Welcome, {user.fullName} ({user.role})
+                  Welcome, {user.name} ({user.role})
                 </span>
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </>
