@@ -42,9 +42,9 @@ const Register = () => {
           className="w-full mb-4 p-2 border rounded"
         >
           <option value="" disabled>Select Role</option>
-          <option value="admin" disabled>Admin</option>
-          <option value="mentor">Mentor</option>
-          <option value="applicant">Applicant</option>
+          <option value="Admin" disabled>Admin</option>
+          <option value="Mentor">Mentor</option>
+          <option value="Startup">Startup</option>
         </select>
         <input
           type="password"
