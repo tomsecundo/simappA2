@@ -1,9 +1,9 @@
 // src/pages/Applications.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../services/axiosConfig';
-import RequireAdmin from '../components/RequireAdmin';
+import { useAuth } from '../../context/AuthContext';
+import axiosInstance from '../../services/axiosConfig';
+import RequireAdmin from '../../components/RequireAdmin';
 
 const Applications = () => {
   const { user } = useAuth();

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../services/axiosConfig';
-import RequireAuth from '../components/RequireAuth';
-import { UserRole } from '../constants/UserRole';
+import { useAuth } from '../../context/AuthContext';
+import axiosInstance from '../../services/axiosConfig';
+import RequireAuth from '../../components/RequireAuth';
+import { UserRole } from '../../constants/UserRole';
 
 const Profile = () => {
   const { user } = useAuth(); // Access user token from context
@@ -20,7 +20,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('/api/auth/profile', {
+        const response = await axiosInstance.get('/api/user/profile', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setFormData({
@@ -45,7 +45,7 @@ const Profile = () => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.put('/api/auth/profile', formData, {
+      const response = await axiosInstance.put('/api/user/profile', formData, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setFormData({...formData,
