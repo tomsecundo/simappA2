@@ -10,9 +10,6 @@ import Unauthorized from './pages/Unauthorized';
 import RequireRole from './components/RequireRole';
 import { UserRole } from './constants/UserRole';
 
-// Importing the Bootstrap CSS
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 function App() {
   return (
     <Router>

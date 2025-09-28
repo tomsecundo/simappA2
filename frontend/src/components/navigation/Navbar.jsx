@@ -27,8 +27,8 @@ const NavbarComponent = () => {
                   <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
                 )}
                 
-                {/* Show Startup link only to Admin */}
-                {isAdmin() && (
+                {/* Show Applications link only to Admin and Mentor */}
+                {hasAnyRole([UserRole.ADMIN, UserRole.MENTOR]) && (
                   <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
                 )}
 
@@ -40,13 +40,13 @@ const NavbarComponent = () => {
           <Nav>
             {!user ? (
               <>
-                {/* Show Apply button only to non-authenticated users */}
+                {/* Show Register button only to non-authenticated users */}
                 <Nav.Link 
                   as={Link} 
                   to="/register" 
                   className="bg-green-500 px-4 py-2 mx-2 rounded hover:bg-green-700 text-black"
                 >
-                  Register as Applicant
+                  Register
                 </Nav.Link>
                 <Nav.Link as={Link} to="/login">Login</Nav.Link>
               </>
