@@ -7,6 +7,7 @@ const {
     updateApplicationStatus,
     deleteApplication
 } = require('../controllers/applicationController');
+
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // Public route for submitting applications
