@@ -1,11 +1,11 @@
-const { Application, ApplicationStatus } = require('../models/Application');
+const { Report, ApplicationStatus } = require('../models/Application');
 const crypto = require('crypto');
 
 // Generate a unique application ID
 const generateReportId = async () => {
     const timestamp = new Date().getTime().toString();
     const randomStr = crypto.randomBytes(4).toString('hex');
-    const applicationId = `app-${timestamp.substring(timestamp.length - 6)}-${randomStr}`;
+    const reportId = `app-${timestamp.substring(timestamp.length - 6)}-${randomStr}`;
     
     // Make sure the ID is unique
     const existingReport = await Report.findOne({ reportId });
@@ -13,47 +13,62 @@ const generateReportId = async () => {
         return generateReportId();
     }
     
-    return applicationId;
+    return reportId;
 };
 
 // Create a new application
 const createReport = async (req, res) => {
     try {
-        const { applicationEmail, applicationPhone, programApplied, startupName, description } = req.body;
+        const { applicationId, submissionDate, phase1, phase2, phase3, phase4, programApplied, startupName, description, remarks } = req.body;
 
         // Generate a unique application ID
-        const applicationId = await generateApplicationId();
-        const application = new Application({ applicationId, applicationEmail, applicationPhone, programApplied, startupName, description });
-        const savedApplication = await application.save();
-        res.status(201).json(savedApplication);
+        const reportId = await generateReportId();
+        const report = new Report({ reportId, applicationId, submissionDate, phase1, phase2, phase3, phase4, programApplied, startupName, description, remarks });
+        const submittedReport = await report.save();
+        res.status(201).json(submittedReport);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to create application', error: error.message });
+        res.status(500).json({ message: 'Failed to generate report', error: error.message });
     }
 };
 
 // Get all applications (Read)
 const getAllReports = async (req, res) => {
     try {
-        const applications = await Application.find().sort({ submissionDate: -1 });
-        res.status(200).json(applications);
+        const reports = await Report.find().sort({ submissionDate: -1 });
+        res.status(200).json(reports);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch applications', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch reports', error: error.message });
     }
 };
 
-// Get a single application by ID
+// Get a report by reportID
 const getReportById = async (req, res) => {
     try {
         const { id } = req.params;
-        const application = await Application.findById(id);
+        const report = await Report.findById(id);
         
-        if (!application) {
-            return res.status(404).json({ message: 'Application not found' });
+        if (!report) {
+            return res.status(404).json({ message: 'Report not found' });
         }
         
-        res.status(200).json(application);
+        res.status(200).json(report);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch application', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
+    }
+};
+// Get reports by application ID
+const getReportByApplicationId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const report = await Report.findById(id);
+        
+        if (!report) {
+            return res.status(404).json({ message: 'Report not found' });
+        }
+        
+        res.status(200).json(report);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
     }
 };
 
@@ -64,17 +79,20 @@ const updateReport = async (req, res) => {
         const { status } = req.body;
         
         // Validate status
-        const validStatuses = Object.values(ApplicationStatus);
+        const validStatuses = Object.values(phaseStatus);
         if (!validStatuses.includes(status)) {
-            return res.status(400).json({ message: 'Invalid status value' });
+            return res.status(400).json({ message: 'Invalid phase status value' });
         }
         
-        const application = await Application.findById(id);
-        if (!application) {
-            return res.status(404).json({ message: 'Application not found' });
+        const report = await Report.findById(id);
+        if (!report) {
+            return res.status(404).json({ message: 'Report not found' });
         }
         
-        application.status = status;
+        report.phase1 = status;
+        report.phase2 = status;
+        report.phase3 = status;
+        report.phase4 = status;
         const updatedApplication = await application.save();
         
         res.status(200).json(updatedApplication);
@@ -86,24 +104,24 @@ const updateReport = async (req, res) => {
 // Delete application
 const deleteReport = async (req, res) => {
     try {
-        const application = await Application.findById(req.params.id);
+        const report = await Report.findById(req.params.id);
         
-        if (!application) {
-            return res.status(404).json({ message: 'Application not found' });
+        if (!report) {
+            return res.status(404).json({ message: 'Report not found' });
         }
         
         // Only allow admin to delete it
         // if (req.user.role !== 'admin' && application.userId.toString() !== req.user.id)
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Not authorized to delete this application' });
-        }
+        // if (req.user.role !== 'admin') {
+        //     return res.status(403).json({ message: 'Not authorized to delete this application' });
+        // }
         
-        await Application.deleteOne({ _id: req.params.id });
-        res.json({ message: 'Application deleted successfully' });
+        await Report.deleteOne({ _id: req.params.id });
+        res.json({ message: 'Report deleted successfully' });
     } catch (error) {
-        console.error('Delete application error:', error);
+        console.error('Deleting report error:', error);
         res.status(500).json({ 
-            message: 'Failed to delete application', 
+            message: 'Failed to delete report', 
             error: error.message 
         });
     }
