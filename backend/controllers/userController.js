@@ -1,5 +1,22 @@
 const { User, Mentor } = require('../models/UserModel');
 
+const getUsers = async (req,res) => {
+  try {
+    if (req.query.role === 'Mentor') {
+      const mentors = await Mentor.find({}).select('-password');
+      if (mentors.length) return res.json(mentors);
+      
+      const userMentors = await User.find({role: 'Mentor'}).select('-password');
+      return res.json(userMentors);
+  }
+
+  const users = await User.find({role:'Mentor'}).select('-password');
+  return res.json(users);
+  } catch (err) {
+    return res.status(500).json({message: 'Server error'});
+  }
+};
+
 
 const getProfile = async (req, res) => {
   try {
@@ -66,4 +83,4 @@ const updateUserProfile = async (req, res) => {
       }
     };
 
-module.exports = { updateUserProfile, getProfile };
+module.exports = { updateUserProfile, getProfile, getUsers };

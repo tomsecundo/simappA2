@@ -32,6 +32,11 @@ const NavbarComponent = () => {
                   <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
                 )}
 
+                {/* Show Mentor List link only to Admin */}
+                {hasAnyRole([UserRole.ADMIN]) && (
+                  <Nav.Link as={Link} to="/mentor">Mentorship</Nav.Link>
+                )}
+
                 {/* Profile link is available to all authenticated users */}
                 <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
               </>

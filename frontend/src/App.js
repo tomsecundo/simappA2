@@ -6,6 +6,7 @@ import ProtectedProfile from './pages/Profile/Profile';
 import ProtectedApplications from './pages/Applications/Applications';
 import ApplicationForm from './components/ApplicationForm';
 import ProtectedApplicationDetail from './components/ApplicationDetail';
+import ProtectedMentors from './pages/Mentorship/Mentor';
 import Unauthorized from './pages/Unauthorized';
 import RequireRole from './components/RequireRole';
 import { UserRole } from './constants/UserRole';
@@ -38,6 +39,14 @@ function App() {
             element={
               <RequireRole allowedRoles={[UserRole.STARTUP]}>
                 <ApplicationForm />
+              </RequireRole>
+            } 
+          />
+          <Route 
+            path="/mentor" 
+            element={
+              <RequireRole allowedRoles={[UserRole.ADMIN]}>
+                <ProtectedMentors />
               </RequireRole>
             } 
           />
