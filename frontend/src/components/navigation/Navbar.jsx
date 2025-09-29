@@ -22,6 +22,7 @@ const NavbarComponent = () => {
           <Nav className="me-auto">
             {user && (
               <>
+                <Nav.Link as={Link} to="/programs">Programs</Nav.Link>
                 {/* Show Applications link only to Admin and Mentor */}
                 {hasAnyRole([UserRole.ADMIN, UserRole.MENTOR]) && (
                   <Nav.Link as={Link} to="/applications">Applications</Nav.Link>

@@ -4,7 +4,7 @@ const Program = require("../domain/Program");
 class ProgramRepo {
   async create(program) {
     const data = new ProgramModel({
-      name: program.name,
+      title: program.title,
       description: program.description,
       startDate: program.startDate,
       endDate: program.endDate
@@ -13,7 +13,7 @@ class ProgramRepo {
     const saved = await data.save();
     return new Program({
       id: saved._id.toString(),
-      name: saved.name,
+      title: saved.title,
       description: saved.description,
       startDate: saved.startDate,
       endDate: saved.endDate
@@ -26,7 +26,7 @@ class ProgramRepo {
 
     return new Program({
       id: doc._id.toString(),
-      name: doc.name,
+      title: doc.title,
       description: doc.description,
       startDate: doc.startDate,
       endDate: doc.endDate
@@ -39,7 +39,7 @@ class ProgramRepo {
       (doc) =>
         new Program({
           id: doc._id.toString(),
-          name: doc.name,
+          title: doc.title,
           description: doc.description,
           startDate: doc.startDate,
           endDate: doc.endDate
@@ -53,7 +53,7 @@ class ProgramRepo {
 
     return new Program({
       id: doc._id.toString(),
-      name: doc.name,
+      title: doc.title,
       description: doc.description,
       startDate: doc.startDate,
       endDate: doc.endDate

@@ -1,14 +1,14 @@
 class Program {
-  constructor({ id, name, description, startDate, endDate }) {
-    if (!name || name.trim().length < 3) {
-      throw new Error("Program name must be at least 3 characters long");
+  constructor({ id, title, description, startDate, endDate }) {
+    if (!title || title.trim().length < 3) {
+      throw new Error("Program title must be at least 3 characters long");
     }
     if (new Date(startDate) >= new Date(endDate)) {
       throw new Error("Program start date must be before end date");
     }
 
     this.id = id;
-    this.name = name.trim();
+    this.title = title.trim();
     this.description = description || "";
     this.startDate = new Date(startDate);
     this.endDate = new Date(endDate);
@@ -19,9 +19,9 @@ class Program {
     return Math.ceil(ms / (1000 * 60 * 60 * 24));
   }
 
-  updateDetails({ name, description, startDate, endDate }) {
-    if (name && name.trim().length >= 3) {
-      this.name = name.trim();
+  updateDetails({ title, description, startDate, endDate }) {
+    if (title && title.trim().length >= 3) {
+      this.title = title.trim();
     }
     if (description !== undefined) {
       this.description = description;
