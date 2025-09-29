@@ -1,22 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { 
-    createApplication, 
-    getAllApplications,
-    getApplicationById,
-    updateApplicationStatus,
-    deleteApplication
-} = require('../controllers/applicationController');
+const ApplicationController = require("../controllers/applicationController");
+const validateApplication = require("../validators/validateApplication");
+const { protect, hasRole } = require("../middleware/authMiddleware");
+const { UserRole } = require('../models/UserModel');
 
-const { protect, adminOnly } = require('../middleware/authMiddleware');
-
-// Public route for submitting applications
-router.post('/apply', createApplication);
+// Startup: can submit application
+// router.post('/', protect, hasRole(UserRole.STARTUP), validateApplication, ApplicationController.create);
+router.post('/', protect, validateApplication, ApplicationController.create);
 
 // Protected routes for managing applications
-router.get('/', protect, adminOnly, getAllApplications);
-router.get('/:id', protect, adminOnly, getApplicationById);
-router.delete('/:id', protect, deleteApplication);
-router.patch('/:id/status', protect, adminOnly, updateApplicationStatus);
+router.get('/', protect, ApplicationController.getAll);
+router.get('/:id', protect, ApplicationController.getById);
+router.put('/:id', protect, ApplicationController.update);
+router.patch('/:id/status', protect, ApplicationController.updateStatus);
+router.delete('/:id', protect, ApplicationController.delete);
 
 module.exports = router;

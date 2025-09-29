@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User, UserRole } = require('../models/UserModel');
+const { User } = require('../models/UserModel');
 
 const protect = async (req, res, next) => {
     try {
@@ -30,13 +30,18 @@ const protect = async (req, res, next) => {
     }
 };
 
-// Middleware to check for admin role
-const adminOnly = (req, res, next) => {
-    if (req.user && req.user.role === UserRole.ADMIN) {
+// Role-based access control
+const hasRole = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ message: "Access denied: insufficient role" });
+        }
         next();
-    } else {
-        res.status(403).json({ message: 'Access denied: Admin only' });
-    }
+    };
 };
 
-module.exports = { protect, adminOnly };
+module.exports = { protect, hasRole };
