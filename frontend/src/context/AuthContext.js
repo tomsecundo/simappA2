@@ -38,6 +38,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
     };
 
+    // Headers helper
+    const getAuthHeaders = () => {
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
     // Role check helper functions
     const hasRole = (requiredRole) => user && user.role === requiredRole;
     const isAdmin = () => hasRole(UserRole.ADMIN);
@@ -52,21 +57,21 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider 
-        value={{ 
-            user, 
-            token,
-            login, 
-            logout, 
-            // loading, 
-            isAdmin,
-            isMentor,
-            isStartup,
-            hasRole,
-            hasAnyRole,
-            hasAllRoles
-        }}
-        >
-        {children}
+            value={{ 
+                user, 
+                token,
+                login, 
+                logout, 
+                getAuthHeaders,
+                isAdmin,
+                isMentor,
+                isStartup,
+                hasRole,
+                hasAnyRole,
+                hasAllRoles
+            }}
+            >
+            {children}
         </AuthContext.Provider>
     );
 };
