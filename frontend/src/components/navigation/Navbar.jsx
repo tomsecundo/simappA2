@@ -3,8 +3,8 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const NavbarComponent = () => {
-  const { user, logout } = useAuth();
+const NavbarComponent = ({ toggleSidebar }) => {
+  const { user, logout, hasAnyRole, isAdmin, isMentor } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
