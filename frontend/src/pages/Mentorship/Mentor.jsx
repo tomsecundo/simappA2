@@ -150,7 +150,7 @@ const Mentors = () => {
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button
                       onClick={() => handleUpdate(m._id)}
-                      className="text-indigo-600 hover:text-indigo-900 font-medium"
+                      className="mr-3 text-indigo-600 hover:text-indigo-900 font-medium"
                     >
                       Update
                     </button>
