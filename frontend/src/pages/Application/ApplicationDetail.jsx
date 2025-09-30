@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useApplicationApi } from '../../api/applicationApi';
 import ErrorBanner from '../../components/common/ErrorBanner';
 import DeleteApplicationButton from '../../components/Application/DeleteApplicationButton';
@@ -11,15 +11,17 @@ function ApplicationDetail() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        getApplicationById(id).then(setApplication).catch(() => setError('Failed to load application'));
+        getApplicationById(id)
+            .then(setApplication)
+            .catch(() => setError('Failed to load application'));
     }, [id, getApplicationById]);
 
     const handleStatusChange = async (status) => {
         try {
-        const updated = await updateApplicationStatus(id, status);
-        setApplication(updated);
+            const updated = await updateApplicationStatus(id, status);
+            setApplication(updated);
         } catch {
-        setError('Failed to update application');
+          setError('Failed to update application');
         }
     };
 
@@ -27,13 +29,23 @@ function ApplicationDetail() {
 
     return (
         <div className="p-4">
-        <h2>Application Detail</h2>
-        <ErrorBanner message={error} onClose={() => setError('')} />
-        <p><strong>Startup:</strong> {application.startupName}</p>
-        <p><strong>Status:</strong> {application.status}</p>
-        <button onClick={() => handleStatusChange('approved')} className="btn btn-success me-2">Approve</button>
-        <button onClick={() => handleStatusChange('rejected')} className="btn btn-danger">Reject</button>
-        <DeleteApplicationButton id={id} />
+            <h2>Application Detail</h2>
+            <ErrorBanner message={error} onClose={() => setError('')} />
+            <p><strong>Startup:</strong> {application.startupName}</p>
+            <p><strong>Status:</strong> {application.status}</p>
+            <button
+                onClick={() => handleStatusChange('Accepted')}
+                className="btn btn-success me-2"
+            >
+                Accepted
+            </button>
+            <button
+                onClick={() => handleStatusChange('Rejected')}
+                className="btn btn-danger"
+            >
+                Reject
+            </button>
+            <DeleteApplicationButton id={id} />
         </div>
     );
 }

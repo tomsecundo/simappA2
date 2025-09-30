@@ -13,7 +13,7 @@ export function useApplicationApi() {
 
     const getApplications = async () => {
         const res = await axiosInstance.get(API_URL, { headers: getAuthHeaders() });
-        return res.data;
+        return res.data; 
     };
 
     const getApplicationById = async (id) => {
