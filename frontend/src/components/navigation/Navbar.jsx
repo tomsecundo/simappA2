@@ -25,6 +25,7 @@ const NavbarComponent = ({ toggleSidebar }) => {
                             <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
                             <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
                             <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
+                            <Nav.Link as={Link} to="/mentor">Mentorship</Nav.Link>
                         </>
                         )}
                     </Nav>

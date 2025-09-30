@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // layout
-import Layout from './components/layout/Layout.jsx';
+import Layout from './components/layout/Layout';
 
 // pages
 import Unauthorized from './pages/Unauthorized';
@@ -12,9 +12,11 @@ import Profile from './pages/Profile/Profile';
 // Application feature
 import ApplicationsList from './pages/Application/ApplicationsList';
 import ApplicationDetail from './pages/Application/ApplicationDetail';
-import ApplicationEditForm from './pages/Application/ApplicationEditForm.jsx';
+import ApplicationEditForm from './pages/Application/ApplicationEditForm';
 import ApplicationForm from './pages/Application/ApplicationForm';
-// import ApplicationEditForm from './components/Application/ApplicationFormComponent';
+
+import ProtectedMentors from './pages/Mentorship/Mentor';
+import ProtectedUpdateMentor from './pages/Mentorship/UpdateMentor';
 
 // Program feature
 import ProgramList from './pages/Program/ProgramList';
@@ -25,6 +27,7 @@ import RequireRole from './components/RequireRole';
 
 // constants
 import { UserRole } from './constants/UserRole';
+import { Navigate } from 'react-router-dom';
 
 function App() {
     return (
@@ -54,24 +57,10 @@ function App() {
                     />
 
                     {/* Applications */}
-                    <Route 
-                        path="/applications" 
-                        element={ <ApplicationsList /> } 
-                    />
-                    {/* Applications */}
-                    <Route 
-                        path="/applications/new" 
-                        element={ <ApplicationForm /> } 
-                    />
-                    <Route 
-                        path="/applications/:id" 
-                        element={
-                        <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.STARTUP]}>
-                            <ApplicationDetail />
-                        </RequireRole>
-                        } 
-                    />
-                    <Route path="/applications/:id/edit" element={<ApplicationEditForm />} />
+                    <Route path="/applications" element={ <ApplicationsList /> } />
+                    <Route path="/applications/new" element={ <ApplicationForm /> } />
+                    <Route path="/applications/:id" element={<ApplicationDetail /> } />
+                    <Route path="/applications/:id/edit" element={<ApplicationEditForm /> } />
                     <Route 
                         path="/applications/apply" 
                         element={
@@ -82,7 +71,26 @@ function App() {
                     />
 
                     {/* Profile */}
+                    <Route 
+                        path="/mentor" 
+                        element={
+                        <RequireRole allowedRoles={[UserRole.ADMIN]}>
+                            <ProtectedMentors />
+                        </RequireRole>
+                        } 
+                    />
+
+                    {/* Mentorship */}
+                    <Route 
+                        path="/mentor/update/:id" 
+                        element={
+                        <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR]}>
+                            <ProtectedUpdateMentor />
+                        </RequireRole>
+                        } 
+                    />
                     <Route path="/profile" element={<Profile />} />
+                                <Route path="*" element={<Navigate to="/login" replace/>} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
             </Layout>
