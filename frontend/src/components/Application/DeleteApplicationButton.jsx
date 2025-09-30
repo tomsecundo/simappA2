@@ -1,47 +1,36 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { useApplicationApi } from '../../api/applicationApi';
-import { Alert } from 'react-bootstrap';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useApplicationsHook } from '../../hooks/useApplicationsHook';
 
 const DeleteApplicationButton = ({ applicationId, className, onDelete }) => {
-    const { deleteApplication } = useApplicationApi();
-    const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const { deleteApplication } = useApplicationsHook();
     const [error, setError] = useState(null);
-
-    const mutation = useMutation({
-        mutationFn: () => deleteApplication(applicationId),
-        onSuccess: () => {
-            queryClient.invalidateQueries(['applications']);
-            if (onDelete) {
-                onDelete(applicationId);
-            } else {
-                navigate('/applications');
-            }
-        },
-        onError: (err) => {
-            setError(err.response?.data?.message || 'Failed to remove application');
-        }
-    });
 
     const handleDelete = () => {
         if (!window.confirm('Are you sure you want to remove this application? This action cannot be undone.')) return;
         setError(null);
-        mutation.mutate();
+
+        deleteApplication.mutate(applicationId, {
+            onSuccess: () => navigate('/applications'),
+            onError: (error) => {
+                setError(error.response?.data?.message || 'Failed to remove application');
+            }
+        });
     };
 
     return (
-        <div>
-            {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
+        <>
             <button 
+                type='button'
                 onClick={handleDelete} 
-                disabled={mutation.isLoading}
-                className={className}
+                disabled={deleteApplication.isLoading}
+                className={className || 'btn btn-sm btn-danger'}
             >
-                {mutation.isLoading ? 'Removing...' : 'Remove'}
+                {deleteApplication.isLoading ? 'Removing...' : 'Remove'}
             </button>
-        </div>
+            { error ? <div className='text-danger small mt-1'>{{error}}</div> : null }
+        </>
     );
 };
 

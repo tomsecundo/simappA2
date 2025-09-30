@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useApplicationApi } from '../../api/applicationApi';
-import { useProgramApi } from '../../api/programApi';
+import { useApplicationsHook } from '../../hooks/useApplicationsHook';
+import { useProgramsHook } from '../../hooks/useProgramsHook';
 import ErrorBanner from '../../components/common/ErrorBanner';
 import ApplicationFormComponent from '../../components/Application/ApplicationFormComponent';
 
 function ApplicationForm() {
-    const { createApplication } = useApplicationApi();
-    const { getPrograms } = useProgramApi();
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
+    const { createApplication } = useApplicationsHook();
+    const { programsQuery } = useProgramsHook();
 
     const [form, setForm] = useState({
         startupName: '',
@@ -21,26 +19,28 @@ function ApplicationForm() {
     });
     const [error, setError] = useState('');
 
-    const { data: programs = [] } = useQuery({
-        queryKey: ['programs'],
-        queryFn: getPrograms,
-    });
-
-    const mutation = useMutation({
-        mutationFn: createApplication,
-        onSuccess: () => {
-        queryClient.invalidateQueries(['applications']);
-        navigate('/applications');
-        },
-        onError: () => {
-        setError('Failed to submit application');
-        },
-    });
+    // const mutation = useMutation({
+    //     mutationFn: createApplication,
+    //     onSuccess: () => {
+    //     queryClient.invalidateQueries(['applications']);
+    //     navigate('/applications');
+    //     },
+    //     onError: () => {
+    //     setError('Failed to submit application');
+    //     },
+    // });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate(form);
+        setError('');
+        createApplication.mutate(form, {
+            onSuccess: () => navigate('/applications'),
+            onError: () => setError('Failed to submit application'),
+        });
     };
+
+    if (programsQuery.isLoading) return <p>Loading programs...</p>;
+    if (programsQuery.isError) return <ErrorBanner message="Failed to load programs" />;
 
     return (
         <div className="p-4">
@@ -50,8 +50,9 @@ function ApplicationForm() {
                 form={form}
                 setForm={setForm}
                 onSubmit={handleSubmit}
-                programs={programs}
-                isLoading={mutation.isLoading}
+                programs={programsQuery.data || []}
+                isLoading={createApplication.isLoading}
+                submitLabel="Submit"
             />
         </div>
     );

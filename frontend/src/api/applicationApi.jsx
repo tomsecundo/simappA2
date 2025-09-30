@@ -6,18 +6,18 @@ const API_URL = '/api/applications';
 export function useApplicationApi() {
     const { getAuthHeaders } = useAuth();
 
-    const createApplication = async (data) => {
-        const res = await axiosInstance.post(`${API_URL}`, data, { headers: getAuthHeaders() });
-        return res.data;
-    };
-
     const getApplications = async () => {
         const res = await axiosInstance.get(API_URL, { headers: getAuthHeaders() });
         return res.data; 
     };
-
+    
     const getApplicationById = async (id) => {
         const res = await axiosInstance.get(`${API_URL}/${id}`, { headers: getAuthHeaders() });
+        return res.data;
+    };
+    
+    const createApplication = async (data) => {
+        const res = await axiosInstance.post(`${API_URL}`, data, { headers: getAuthHeaders() });
         return res.data;
     };
 

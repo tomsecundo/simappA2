@@ -1,28 +1,44 @@
-import { useEffect, useState } from "react";
-import { getPrograms } from "../api/programApi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProgramApi } from "../api/programApi";
 
-export function usePrograms() {
-  const [programs, setPrograms] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+export function useProgramsHook() {
+    const api = useProgramApi();
+    const qc = useQueryClient();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getPrograms();
-        setPrograms(data);
-      } catch (err) {
-        if (err.response) {
-          setError(`Error ${err.response.status}: ${err.response.data?.error || "Request failed"}`);
-        } else {
-          setError("Network error: Unable to reach server");
+    const programsQuery = useQuery({
+        queryKey: ['programs'],
+        queryFn: api.getPrograms,
+    });
+
+    const useProgram = (id) => useQuery({
+        queryKey: ['program', id],
+        queryFn: () => api.getProgramById(id),
+        enabled: !!id, // only run if id is passed
+    });
+
+    const createProgram = useMutation({
+        mutationFn: api.createProgram,
+        onSuccess: () => qc.invalidateQueries(['programs']),
+    })
+
+    const updateProgram = useMutation({
+        mutationFn: ({ id, data }) => api.updateProgram(id, data),
+        onSuccess: (_data, { id }) => {
+            qc.invalidateQueries(['programs']);
+            qc.invalidateQueries(['program', id]);
         }
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+    });
 
-  return { programs, setPrograms, loading, error, setError };
+    const deleteProgram = useMutation({
+        mutationFn: api.deleteProgram,
+        onSuccess: () => qc.invalidateQueries(['programs']),
+    });
+
+    return {
+        programsQuery,
+        useProgram,
+        createProgram,
+        updateProgram,
+        deleteProgram,
+    };
 }

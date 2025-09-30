@@ -19,8 +19,7 @@ function ApplicationsList() {
             <Link to="/applications/new" className="btn btn-primary my-3">New Application</Link>
             <ApplicationTable 
                 applications={applications} 
-                onView={(id) => navigate(`/applications/${id}`)} 
-                onDelete={(id) => deleteApplication(id)}/>
+                onView={(id) => navigate(`/applications/${id}`)} />
         </div>
     );
 }

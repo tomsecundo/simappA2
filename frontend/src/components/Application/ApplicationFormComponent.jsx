@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs = [], isLoading }) {
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs = [], isLoading, submitLabel }) {
+    const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     return (
         <form onSubmit={onSubmit} className="space-y-3">
@@ -11,7 +10,7 @@ function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs
                 name="startupName"
                 placeholder="Startup Name"
                 value={form.startupName || ''}
-                onChange={handleChange}
+                onChange={onChange}
                 required
             />
             <select
@@ -19,7 +18,7 @@ function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs
                 name="program"
                 placeholder="Program"
                 value={form.program || ''}
-                onChange={handleChange}
+                onChange={onChange}
                 required
             >
                 <option value="">Select Program</option>
@@ -35,7 +34,7 @@ function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs
                 name="applicationEmail"
                 placeholder="Email"
                 value={form.applicationEmail|| ''}
-                onChange={handleChange}
+                onChange={onChange}
                 required
             />
             <input
@@ -44,7 +43,7 @@ function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs
                 name="applicationPhone"
                 placeholder="Phone"
                 value={form.applicationPhone || ''}
-                onChange={handleChange}
+                onChange={onChange}
                 required
             />
             <textarea
@@ -52,10 +51,10 @@ function ApplicationFormComponent({ form = {}, setForm = {} , onSubmit, programs
                 name="description"
                 placeholder="Description"
                 value={form.description || ''}
-                onChange={handleChange}
+                onChange={onChange}
             />
             <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                {isLoading ? 'Processing...' : 'Submit'}
+                {isLoading ? 'Processing...' : (submitLabel || 'Submit') }
             </button>
             <Link to={'/applications'} className='btn btn-secondary mx-2'>Cancel</Link>
         </form>
