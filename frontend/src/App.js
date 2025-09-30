@@ -49,6 +49,14 @@ function App() {
               </RequireRole>
             } 
           />
+          <Route 
+            path="/reports" 
+            element={
+              <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.STARTUP]}>
+                <ProtectedProfile />
+              </RequireRole>
+            } 
+          />
           <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>
       </Layout>
