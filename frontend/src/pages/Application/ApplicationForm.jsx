@@ -19,17 +19,6 @@ function ApplicationForm() {
     });
     const [error, setError] = useState('');
 
-    // const mutation = useMutation({
-    //     mutationFn: createApplication,
-    //     onSuccess: () => {
-    //     queryClient.invalidateQueries(['applications']);
-    //     navigate('/applications');
-    //     },
-    //     onError: () => {
-    //     setError('Failed to submit application');
-    //     },
-    // });
-
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');

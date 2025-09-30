@@ -67,15 +67,15 @@ function ApplicationEditForm() {
 
     return (
         <div className="p-4">
-        <h2>Edit Application</h2>
-        <ErrorBanner message={error} onClose={() => setError('')} />
-        <ApplicationFormComponent
-            form={form}
-            setForm={setForm}
-            onSubmit={handleSubmit}
-            programs={programs}
-            isLoading={mutation.isLoading}
-        />
+            <h2>Edit Application</h2>
+            <ErrorBanner message={error} onClose={() => setError('')} />
+            <ApplicationFormComponent
+                form={form}
+                setForm={setForm}
+                onSubmit={handleSubmit}
+                programs={programs}
+                isLoading={mutation.isLoading}
+            />
         </div>
     );
 }
