@@ -256,15 +256,4 @@ const Profile = () => {
   );
 };
 
-<<<<<<< HEAD
-// export default Profile;
-export default function ProtectedProfile() {
-  return (
-    <RequireAuth>
-      <Profile />
-    </RequireAuth>
-  );
-};
-=======
 export default Profile;
->>>>>>> origin/tempLayout

@@ -87,7 +87,6 @@ function App() {
                         } 
                     />
                     <Route path="/profile" element={<Profile />} />
-                                <Route path="*" element={<Navigate to="/login" replace/>} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
             </Layout>
