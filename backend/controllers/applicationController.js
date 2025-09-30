@@ -46,10 +46,21 @@ class ApplicationController {
 
     async update(req, res, next) {
         try {
-            const updated = await ApplicationRepo.update(req.params.id, req.body);
-            if (!updated) {
+            const {id} = req.params;
+            const data = req.body;
+            
+            const application = await ApplicationRepo.findById(id);
+            if (!application) {
                 return res.status(404).json({ message: "Application not found" });
             }
+
+            if(![ApplicationStatus.PENDING, ApplicationStatus.UNDER_REVIEW].includes(application.status)) {
+                return res.status(400).json({
+                    message: `Application cannot be edited because it is already ${application.status}`,
+                });
+            }
+
+            const updated = await ApplicationRepo.update(id, data);
             res.json(updated);
         } catch (error) {
             next(error);
@@ -65,7 +76,7 @@ class ApplicationController {
                 return res.status(400).json({ message: "Invalid status value" });
             }
 
-            const updated = await ApplicationRepo.update(id, status);
+            const updated = await ApplicationRepo.updateStatus(id, status);
             if (!updated) {
                 return res.status(404).json({ message: "Application not found" });
             }

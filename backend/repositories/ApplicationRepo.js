@@ -17,7 +17,14 @@ class ApplicationRepository {
                         .populate("createdBy", "name email role");
     }
 
-    async update(id, status) {
+    async updateFields(id, data) {
+        return await ApplicationModel
+                        .findByIdAndUpdate(id, data, { new: true })
+                        .populate("program", "title")
+                        .populate("createdBy", "name email role");
+    }
+
+    async updateStatus(id, status) {
         return await ApplicationModel
                         .findByIdAndUpdate(id, { status }, { new: true })
                         .populate("program", "title")
