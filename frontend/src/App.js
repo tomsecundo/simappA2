@@ -11,14 +11,12 @@ import ProtectedUpdateMentor from './pages/Mentorship/UpdateMentor';
 import Unauthorized from './pages/Unauthorized';
 import RequireRole from './components/RequireRole';
 import { UserRole } from './constants/UserRole';
-import { Navigate } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route 
@@ -69,7 +67,6 @@ function App() {
               </RequireRole>
             } 
           />
-          <Route path="*" element={<Navigate to="/login" replace/>} />
           <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>
       </Layout>

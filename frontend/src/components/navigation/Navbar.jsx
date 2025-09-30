@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../constants/UserRole';
 
 const NavbarComponent = () => {
-  const { user, logout, hasAnyRole, isAdmin, isMentor } = useAuth();
+  const { user, logout, hasAnyRole} = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {

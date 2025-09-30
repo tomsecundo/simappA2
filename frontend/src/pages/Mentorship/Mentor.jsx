@@ -47,18 +47,12 @@ const Mentors = () => {
 
   useEffect(() => {
     const updated = location.state?.updated;
-    if(updated){
-        const uid = (updated._id || updated.id)?.toString();
-
-        if(uid){
-            setMentors(prev => 
-                prev.map(m=> (m._id?.toString() === uid ? { ...m, ...updated} : m))
-            );
-        }
-        setReload(r=> r + 1);
-        navigate('/mentor', {replace:true, state: null});
+    if(updated?._id){
+        setMentors(prev => prev.map(m=> (m._id === updated._id?{...m, ...updated}:m)));
+        setReload(r=>r+1);
+        navigate('.', {replace:true, state: null});
     }
-  }, [location.state, navigate]);
+  }, [location.state?.updated, navigate]);
 
 
   //Update
@@ -169,7 +163,7 @@ const Mentors = () => {
               </tr>
             ) : (
               mentors.map((m) => (
-                <tr key={String(m._id)} className="hover:bg-gray-50">
+                <tr key={m._id} className="hover:bg-gray-50">
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {m.code || m._id}
                   </td>
@@ -186,7 +180,7 @@ const Mentors = () => {
                     {m.expertise || '-'}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {m.affiliation || m.affiliation || '-'}
+                    {m.affiliation || '-'}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {m.address || '-'}

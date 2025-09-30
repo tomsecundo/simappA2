@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const { User, Mentor } = require('../models/UserModel');
 
 const getUsers = async (req,res) => {
@@ -77,71 +76,32 @@ const updateUserProfile = async (req, res) => {
         user.address = address || user.address;
         if (password) user.password = password;
 
-        const updatedUser = await user.save();
-        const obj = updatedUser.toObject(); delete obj.password;
-        return res.json({_id: updatedUser._id.toString(), id: updatedUser.id, role: updatedUser.role, ...obj});
-
-      } 
-      user = await User.findById(targetId);
-      if (!user) return res.status(404).json({ message: 'User not found' });
+      } else {
+        user = await User.findById(targetId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
       
-      const { name, email, role, university, address, password, firstName, lastName, number, expertise, affiliation } = req.body;
+        const { name, email, role, university, address } = req.body;
 
         user.name = name || user.name;
         user.email = email || user.email;
         user.role = role || user.role;
         user.university = university || user.university;
         user.address = address || user.address;
-        if (password) user.password = password;
-
+      }
         const updatedUser = await user.save();
 
-        if(updatedUser.role === 'Mentor') {
-          const f = firstName ?? (updatedUser.name?.split(' ')[0]||'');
-          const l = lastName ?? (updatedUser.name?.split(' ').slice(1).join(' ') || '');
-
-          const update = {
-              $set: {
-                role: 'Mentor',
-                email: updatedUser.email,
-                password: updatedUser.password,
-                firstName: f,
-                lastName: l,
-                expertise,
-                affiliation,
-                address: updatedUser.address
-              },
-
-              $setOnInsert: {
-                number: number || `AUTO-${updatedUser._id.toString().slice(-6)}`
-              }
-            };
-            if (number) update.$set.number = number;
-
-            try{
-            await Mentor.findOneAndUpdate(
-              {email: updatedUser.email},
-              update,
-              { upsert: true, new: true}
-          );
-        } catch (e) {
-
-          if (e?.code === 11000) {
-            return res.status(400).json({message: 'Duplicate email/number'});
-          }
-            throw e;
-        }
-      }
-
-        const obj = updatedUser.toObject(); delete obj.password;
-        return res.json({ _id: updatedUser._id.toString(), id: updatedUser.id, role: updatedUser.role, ...obj});
+        res.json({ 
+          id: updatedUser.id, 
+          role: updatedUser.role, 
+          ...updatedUser.toObject(),
+        });
 
       } catch (error) {
         res.status(500).json({ message: 'Server error' });
       }
     };
 
-const deleteUser = async (req,res) => {
+  const deleteUser = async (req,res) => {
     try {
         if(!req.user) return res.status(401).json({message: 'Unauthorized'});
         if (req.user.role !== 'Admin') {
@@ -172,4 +132,4 @@ const deleteUser = async (req,res) => {
     }
 };
 
-module.exports = { updateUserProfile, getProfile, getUsers, getUserById, deleteUser,};
+module.exports = { updateUserProfile, getProfile, getUsers, getUserById, deleteUser };
