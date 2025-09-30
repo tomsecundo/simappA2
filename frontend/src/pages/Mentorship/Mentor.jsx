@@ -1,6 +1,6 @@
 // src/pages/Applications.jsx
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation} from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../services/axiosConfig';
 import RequireAdmin from '../../components/RequireAdmin';
@@ -8,20 +8,24 @@ import RequireAdmin from '../../components/RequireAdmin';
 const Mentors = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reload, setReload] = useState(0);
 //   const [statusFilter, setStatusFilter] = useState('All');
   
   // Fetch mentors
-  useEffect(() => {
-    const fetchMentors = async () => {
+    const fetchMentors = useCallback(async () => {
       try {
-        const response = await axiosInstance.get('/api/user?role=Mentor', {
-          headers: { Authorization: `Bearer ${user?.token}` }
+        setLoading(true);
+        const {data} = await axiosInstance.get('/api/user', {
+          headers: { Authorization: `Bearer ${user?.token}` },
+          params: {role: 'Mentor', _ts: Date.now()},
         });
-        setMentors(Array.isArray(response.data)? response.data : []);
+        setMentors(Array.isArray(data)? data : []);
+        setError(null);
 
         // const filteredMentor = list.filter(
         //     (u) => u?.role === 'Mentor' || u?.user?.role === 'Mentor'
@@ -34,15 +38,27 @@ const Mentors = () => {
       } finally{
         setLoading(false);        
       }
-    };
+    }, [user?.token]);
 
-    fetchMentors();
-  }, [user?.token]);
+  useEffect(()=>{
+    if (user?.token) fetchMentors();
+  }, [user?.token, reload, fetchMentors]);
+
+
+  useEffect(() => {
+    const updated = location.state?.updated;
+    if(updated?._id){
+        setMentors(prev => prev.map(m=> (m._id === updated._id?{...m, ...updated}:m)));
+        setReload(r=>r+1);
+        navigate('.', {replace:true, state: null});
+    }
+  }, [location.state?.updated, navigate]);
+
 
   //Update
-  const handleUpdate = (id) => {
-    navigate(`/user/${id}/edit`);
-  };
+  const handleUpdate = (mentor) => {
+    navigate(`/mentor/update/${mentor._id}`, {state: {mentor}});
+  }
 
   //Delete
   const handleDelete = async(id) => {
@@ -101,6 +117,18 @@ const Mentors = () => {
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
                 Last Name
               </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Contact Number
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Expertise
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Affiliation
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Address
+              </th>
               {/* <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
                 Program Applied
               </th>
@@ -135,6 +163,18 @@ const Mentors = () => {
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {m.lastName || '-'}
                   </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {m.number || '-'}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {m.expertise || '-'}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {m.affiliation || '-'}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {m.address || '-'}
+                  </td>
                   {/* <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {program.(application.submissionDate)}
                   </td> */}
@@ -149,7 +189,7 @@ const Mentors = () => {
                   {/* </td> */}
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button
-                      onClick={() => handleUpdate(m._id)}
+                      onClick={() => handleUpdate(m)}
                       className="mr-3 text-indigo-600 hover:text-indigo-900 font-medium"
                     >
                       Update

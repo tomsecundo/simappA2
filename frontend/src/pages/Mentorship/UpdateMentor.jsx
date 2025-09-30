@@ -1,32 +1,36 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import { useAuth } from '../../context/AuthContext';
+import RequireRole from '../../components/RequireRole';
+import { UserRole } from '../../constants/UserRole';
 
 const UpdateMentor = () => {
     const {user} = useAuth();
     const navigate = useNavigate();
     const {id} = useParams();
+    const {state} =useLocation();
+    const seed = state?.mentor || {};
 
   const [formData, setFormData] = useState({ 
     //role/base
     role: 'Mentor', 
-    email: '',
+    email: seed.email || '',
     password: '',
 
     //base user
-    name: '',
-    university: '',
-    address: '',
+    name: seed.name || '',
+    university: seed.university || '',
+    address: seed.address || '',
   
     //mentor
-    firstName:'',
-    lastName: '',
-    number: '',
-    expertise: '',
-    affiliation: '',
+    firstName: seed.firstName || '',
+    lastName: seed.lastName || '',
+    number: seed.number || '',
+    expertise: seed.expertise || '',
+    affiliation: seed.affiliation || '',
   });
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -35,7 +39,6 @@ const UpdateMentor = () => {
     
     const payload = {
         ...(ifAdmin ? {id} : {}),
-        role: 'Mentor',
         email: formData.email,
         ...(formData.password ? {password: formData.password} : {}),
         firstName: formData.firstName,
@@ -50,17 +53,20 @@ const UpdateMentor = () => {
       };
 
       try {
-        await axiosInstance.put('/api/user/profile', payload, {
+        const {data:updated} = await axiosInstance.put('/api/user/profile', payload, {
             headers: { Authorization: `Bearer ${user?.token}`},
         });
             alert('Mentor Information Updated.');
 
-            if (user?.role === 'Admin') navigate('/mentor');
-            else navigate('/profile');
-            } catch (error) {
+            if (user?.role === 'Admin') {
+              navigate('/mentor', {replace:true, state: {updated}});
+            } else {
+              navigate('/profile', {replace:true, state: {updated}});
+            } 
+          }catch (error) {
             alert(error?.response?.data?.message || 'Updated failed.');
             console.log(error);
-            }
+          }
         };
 
   const ifMentor = formData.role === 'Mentor';
@@ -68,7 +74,7 @@ const UpdateMentor = () => {
   return (
     <div className="max-w-md mx-auto mt-20">
       <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded">
-        <h1 className="text-2xl font-bold mb-4 text-center">Update Mentor</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">Update Mentor Information</h1>
         
         {/* Role
         <select
@@ -135,7 +141,6 @@ const UpdateMentor = () => {
                 value={formData.expertise}
                 onChange={(e) => setFormData({...formData, expertise: e.target.value})}
                 className="w-full mb-4 p-2 border rounded"
-                required
               />
               <input
                 type="text"
@@ -143,7 +148,6 @@ const UpdateMentor = () => {
                 value={formData.affiliation}
                 onChange={(e) => setFormData({...formData, affiliation: e.target.value})}
                 className="w-full mb-4 p-2 border rounded"
-                required
               />
               <input
                 type="text"
@@ -151,7 +155,6 @@ const UpdateMentor = () => {
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
                 className="w-full mb-4 p-2 border rounded"
-                required
               />
           </>
         ) :(
@@ -191,4 +194,11 @@ const UpdateMentor = () => {
   );
 };
 
-export default UpdateMentor;
+// Export with authentication protection
+export default function ProtectedUpdateMentor() {
+  return (
+    <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR]}>
+      <UpdateMentor />
+    </RequireRole>
+  );
+}

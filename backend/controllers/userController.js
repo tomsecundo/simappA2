@@ -17,6 +17,24 @@ const getUsers = async (req,res) => {
   }
 };
 
+const getUserById = async (req,res) => {
+  try {
+    const {id} = req.params;
+
+    if (req.user.role !== 'Admin' && req.user._id.toString() !==id) {
+      return res.status(403).json({message: 'Admin/Mentor Only Access'});
+    }
+
+    let user  = await Mentor.findById(id).select('-password');
+    if (!user) user = await User.findById(id).select('-password');
+
+    if (!user) return res.status(404).json({message:'User not Found'});
+    res.json(user);
+  } catch (e) {
+      return res.status(500).json({message: 'Server error'});
+    }
+  };
+
 
 const getProfile = async (req, res) => {
   try {
@@ -40,11 +58,12 @@ const getProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
     try {
-      let user;
-
-      if (req.user.role === "Mentor") {
-        user = await Mentor.findById(req.user._id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
+      
+      const targetId = 
+        req.user.role === 'Admin' && req.body.id ? req.body.id : req.user._id;
+      
+      let user = await Mentor.findById(targetId);
+      if (user) {
 
         const { firstName, lastName, email, number, expertise, affiliation, address, password } = req.body;
         
@@ -58,7 +77,7 @@ const updateUserProfile = async (req, res) => {
         if (password) user.password = password;
 
       } else {
-        user = await User.findById(req.user._id);
+        user = await User.findById(targetId);
         if (!user) return res.status(404).json({ message: 'User not found' });
       
         const { name, email, role, university, address } = req.body;
@@ -74,7 +93,6 @@ const updateUserProfile = async (req, res) => {
         res.json({ 
           id: updatedUser.id, 
           role: updatedUser.role, 
-          token: generateToken({id: updatedUser.id, role: updatedUser.role}),
           ...updatedUser.toObject(),
         });
 
@@ -83,4 +101,4 @@ const updateUserProfile = async (req, res) => {
       }
     };
 
-module.exports = { updateUserProfile, getProfile, getUsers };
+module.exports = { updateUserProfile, getProfile, getUsers, getUserById };
