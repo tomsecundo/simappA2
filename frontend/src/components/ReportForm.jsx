@@ -48,14 +48,14 @@ const ReportForm = () => {
     <Container className="mt-4" style={{ maxWidth: 720 }}>
 
       {success && (
-        <Alert variant="success">Application submitted successfully! We'll contact you soon.</Alert>
+        <Alert variant="success">Report submitted successfully! We'll contact you soon.</Alert>
       )}
 
       {error && (
         <Alert variant="danger">{error}</Alert>
       )}
 
-      <h1 className="text-3xl font-bold mb-3 text-center">Startup Incubation Application</h1>
+      <h1 className="text-3xl font-bold mb-3 text-center">Submit Reports</h1>
       <p className="text-gray-600 mb-4 text-center">
         Complete the form below to submit your application for our startup incubation program.
       </p>

@@ -15,7 +15,7 @@ app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/applications', require('./routes/applicationRoutes'));
 app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
-
+``
 // Export the app object for testing
 if (require.main === module) {
     connectDB();

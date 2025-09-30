@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Reports from './pages/Reports/Reports';
 import ProtectedProfile from './pages/Profile/Profile';
 import ProtectedApplications from './pages/Applications/Applications';
 import ApplicationForm from './components/ApplicationForm';
@@ -53,7 +54,7 @@ function App() {
             path="/reports" 
             element={
               <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.STARTUP]}>
-                <ProtectedProfile />
+                <Reports />
               </RequireRole>
             } 
           />

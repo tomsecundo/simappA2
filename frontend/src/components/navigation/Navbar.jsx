@@ -34,6 +34,7 @@ const NavbarComponent = () => {
 
                 {/* Profile link is available to all authenticated users */}
                 <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
+                <Nav.Link as={Link} to="/reports">Reports</Nav.Link>
               </>
             )}
           </Nav>

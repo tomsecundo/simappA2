@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../services/axiosConfig';
-import RequireAdmin from '../../components/RequireAdmin';
 
 const Reports = () => {
   const { user } = useAuth();
@@ -29,6 +28,7 @@ const Reports = () => {
       }
     };
     
+    
     fetchApplications();
   }, [user]);
   
@@ -53,7 +53,13 @@ const Reports = () => {
   return (
     <div className="container-fluid mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Applications</h1>
+        <h1 className="text-2xl font-bold">Report</h1>
+        <button
+            // onClick={() => handleViewApplication(application._id)}
+            className="text-indigo-600 hover:text-indigo-900 font-medium"
+          >
+            Submit New Report
+        </button>
         <div className="flex items-center">
           <label htmlFor="statusFilter" className="mr-2">Filter by Status:</label>
           <select
@@ -142,8 +148,8 @@ const Reports = () => {
 // Export with authentication protection
 export default function ProtectedApplications() {
   return (
-    <RequireAdmin>
+   
       <Reports />
-    </RequireAdmin>
+    
   );
 }
