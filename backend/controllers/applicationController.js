@@ -1,8 +1,8 @@
 const crypto = require('crypto');
 const Application = require("../domain/ApplicationDomain");
-const applicationRepo = require("../repositories/ApplicationRepo");
-const { ApplicationStatus } = require('../models/ApplicationModel');
 const ApplicationRepo = require('../repositories/ApplicationRepo');
+
+const { ApplicationStatus } = require('../models/ApplicationModel');
 
 class ApplicationController {
     async create(req, res, next) {
