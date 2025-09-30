@@ -2,10 +2,9 @@ import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { UserRole } from '../../constants/UserRole';
 
 const NavbarComponent = () => {
-  const { user, logout, hasAnyRole, isAdmin, isMentor } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,17 +21,9 @@ const NavbarComponent = () => {
           <Nav className="me-auto">
             {user && (
               <>
-                {/* Show Applications link only to Admin and Mentor */}
-                {hasAnyRole([UserRole.ADMIN, UserRole.MENTOR]) && (
-                  <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
-                )}
-                
-                {/* Show Applications link only to Admin and Mentor */}
-                {hasAnyRole([UserRole.ADMIN, UserRole.MENTOR]) && (
-                  <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
-                )}
-
-                {/* Profile link is available to all authenticated users */}
+                <Nav.Link as={Link} to="/programs">Programs</Nav.Link>
+                <Nav.Link as={Link} to="/applications">Applications</Nav.Link>
+                <Nav.Link as={Link} to="/startup">Startup</Nav.Link>
                 <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
               </>
             )}

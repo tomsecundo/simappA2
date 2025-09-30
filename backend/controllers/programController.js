@@ -1,4 +1,4 @@
-const Program = require("../domain/Program");
+const Program = require("../domain/ProgramDomain");
 const ProgramRepo = require("../repositories/ProgramRepo");
 
 class ProgramController {
