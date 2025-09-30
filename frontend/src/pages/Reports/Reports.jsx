@@ -7,19 +7,19 @@ import axiosInstance from '../../services/axiosConfig';
 const Reports = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [applications, setApplications] = useState([]);
+  const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('All');
   
   // Fetch applications
   useEffect(() => {
-    const fetchApplications = async () => {
+    const fetchReport = async () => {
       try {
         const response = await axiosInstance.get('/api/reports', {
           headers: { Authorization: `Bearer ${user.token}` }
         });
-        setApplications(response.data);
+        setReports(response.data);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch applications');
@@ -29,7 +29,7 @@ const Reports = () => {
     };
     
     
-    fetchApplications();
+    fetchReport();
   }, [user]);
   
   // Handle view application details
@@ -39,8 +39,8 @@ const Reports = () => {
   
   // Filter applications by status
   const filteredApplications = statusFilter === 'All' 
-    ? applications 
-    : applications.filter(app => app.status === statusFilter);
+    ? reports 
+    : reports.filter(app => app.status === statusFilter);
   
   // Format date for display
   const formatDate = (dateString) => {
@@ -53,13 +53,8 @@ const Reports = () => {
   return (
     <div className="container-fluid mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Report</h1>
-        <button
-            // onClick={() => handleViewApplication(application._id)}
-            className="text-indigo-600 hover:text-indigo-900 font-medium"
-          >
-            Submit New Report
-        </button>
+        <h1 className="text-2xl font-bold">Progress</h1>
+      
         <div className="flex items-center">
           <label htmlFor="statusFilter" className="mr-2">Filter by Status:</label>
           <select

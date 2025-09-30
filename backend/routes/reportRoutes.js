@@ -11,7 +11,7 @@ const {
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // Public route for submitting applications
-router.post('/reports', createReport);
+router.post('/new', createReport);
 
 // Protected routes for managing applications
 router.get('/', protect, getAllReports);

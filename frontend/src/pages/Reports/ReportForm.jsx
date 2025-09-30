@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axiosInstance from '../services/axiosConfig';
+import axiosInstance from '../../services/axiosConfig';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 
 const ReportForm = () => {
@@ -9,12 +9,10 @@ const ReportForm = () => {
     mentorEmail: '',
     submissionDate: '',
     phase1: '', 
-    phase2: '', 
-    phase3: '', 
-    phase4: '', 
     startupName: '',
     programApplied: '',
-    description: ''
+    description: '',
+    remarks: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -27,18 +25,19 @@ const ReportForm = () => {
     setError('');
 
     try {
-      await axiosInstance.post('/api/applications/apply', formData);
+      await axiosInstance.post('/api/reports/new', formData);
       setSuccess(true);
       setFormData({
         startupName: '',
         programApplied: '',
         applicationEmail: '',
         applicationPhone: '',
-        description: ''
+        description: '',
+        remarks: ''
       });
     } catch (error) {
       // alert('Failed to save application. Please try again.');
-      setError(error.response?.data?.message || 'Failed to submit application. Please try again.');
+      setError(error.response?.data?.message || 'Failed to submit report. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -56,9 +55,7 @@ const ReportForm = () => {
       )}
 
       <h1 className="text-3xl font-bold mb-3 text-center">Submit Reports</h1>
-      <p className="text-gray-600 mb-4 text-center">
-        Complete the form below to submit your application for our startup incubation program.
-      </p>
+   
       <Form onSubmit={handleSubmit} className="bg-white p-4 rounded mb-4">
         <Form.Group className="mb-3" controlId="startupName">
           <Form.Control
@@ -80,37 +77,43 @@ const ReportForm = () => {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="applicationEmail">
+        <Form.Group className="mb-3" controlId="applicationChoice">
+         
           <Form.Control
-            type="email"
-            placeholder="Contact Email"
-            value={formData.applicationEmail}
-            onChange={(e) => setFormData({ ...formData, applicationEmail: e.target.value })}
+            as="select"
+            value={formData.applicationChoice}
+            onChange={(e) => setFormData({ ...formData, applicationChoice: e.target.value })}
             required
-          />
+          >
+            <option value="">Select phase</option>
+            <option value="option1">Phase 1</option>
+            <option value="option2">Phase 2</option>
+            <option value="option3">Phase 3</option>
+            <option value="option4">Phase 4</option>
+          </Form.Control>
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="applicationPhone">
-          <Form.Control
-            type="tel"
-            placeholder="Contact Phone"
-            value={formData.applicationPhone}
-            onChange={(e) => setFormData({ ...formData, applicationPhone: e.target.value })}
-            required
-          />
-        </Form.Group>
+     
         <Form.Group className="mb-3" controlId="description">
           <Form.Control
             as="textarea"
             rows={4}
-            placeholder="Application Description"
+            placeholder="Report Description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             required
           />
         </Form.Group>
+        <Form.Group className="mb-3" controlId="applicationFile">
+          <Form.Label>Attachments (Optional)</Form.Label>
+          <Form.Control
+            type="file"
+            onChange={(e) => setFormData({ ...formData, applicationFile: e.target.files[0] })}
+            required
+          />
+        </Form.Group>
         <Button variant="primary" type="submit" disabled={loading} className="w-100">
-          {loading ? 'Saving...' : 'Submit Application'}
+          {loading ? 'Saving...' : 'Submit Report'}
         </Button>
       </Form>
     </Container>

@@ -24,6 +24,7 @@ import ProgramForm from './pages/Program/ProgramForm';
 
 // Report feature
 import Reports from './pages/Reports/Reports';
+import ReportForm from './pages/Reports/ReportForm';
 
 // Profile feature
 import Profile from './pages/Profile/Profile';
@@ -95,6 +96,8 @@ function App() {
 
                     {/* Reports */}
                     <Route path="/reports" element={<Reports />} />
+                    <Route path="/reports/new" element={<ReportForm />} />
+
 
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />

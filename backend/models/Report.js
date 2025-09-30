@@ -11,30 +11,15 @@ const reportSchema = new mongoose.Schema({
     applicationId: { type: String, required: true, unique: true },
     mentorEmail: { type: String, required: true, unique: true },
     submissionDate: { type: Date, default: Date.now },
-    phase1: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    phase2: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    phase3: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    phase4: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
+    phase: { type: String, required: true },
     programApplied: { type: String, required: true },
     startupName: { type: String, required: true },
     description: { type: String },
-    remarks: { type: String, required: true }
+    remarks:  {
+        type: String,
+        enum: Object.values(phaseStatus),
+        default: phaseStatus.PENDING 
+        }
 }, {
     timestamps: { createdAt: 'createdDateTime', updatedAt: 'updatedDateTime' }
 });
