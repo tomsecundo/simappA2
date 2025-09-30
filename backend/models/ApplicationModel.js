@@ -1,10 +1,11 @@
-const mongoose = require('mongoose');
+const { required } = require("joi");
+const mongoose = require("mongoose");
 
 const ApplicationStatus = {
-    PENDING: 'Pending',
-    UNDER_REVIEW: 'Under Review',
-    ACCEPTED: 'Accepted',
-    REJECTED: 'Rejected'
+    PENDING: "Pending",
+    UNDER_REVIEW: "Under Review",
+    ACCEPTED: "Accepted",
+    REJECTED: "Rejected"
 };
 
 const applicationSchema = new mongoose.Schema({
@@ -12,9 +13,12 @@ const applicationSchema = new mongoose.Schema({
     submissionDate: { type: Date, default: Date.now },
     applicationEmail: { type: String, required: true, trim: true },
     applicationPhone: { type: String, required: true, trim: true },
-    programApplied: { type: String, required: true },
     startupName: { type: String, required: true },
     description: { type: String },
+
+    program: { type: mongoose.Schema.Types.ObjectId, ref: "Program", required: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
     status: {
         type: String,
         enum: Object.values(ApplicationStatus),
@@ -25,6 +29,6 @@ const applicationSchema = new mongoose.Schema({
 });
 
 module.exports = {
-    Application: mongoose.model('Application', applicationSchema),
+    ApplicationModel: mongoose.model("Application", applicationSchema),
     ApplicationStatus
 };
