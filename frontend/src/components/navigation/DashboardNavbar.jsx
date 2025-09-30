@@ -22,7 +22,7 @@ const DashboardNavbar = ({ toggleSidebar }) => {
                         {user && (
                             <>
                                 <NavDropdown title="Programs" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item to="/programs">All Programs</NavDropdown.Item>
+                                    <NavDropdown.Item href="/programs">All Programs</NavDropdown.Item>
                                     <NavDropdown.Item href="#action1">
                                         Another action
                                     </NavDropdown.Item>
@@ -33,7 +33,7 @@ const DashboardNavbar = ({ toggleSidebar }) => {
                                 </NavDropdown>
 
                                 <NavDropdown title="Applications" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item to="/applications">All Applications</NavDropdown.Item>
+                                    <NavDropdown.Item href="/applications">All Applications</NavDropdown.Item>
                                     <NavDropdown.Item href="#action1">
                                         Another action
                                     </NavDropdown.Item>
@@ -44,7 +44,18 @@ const DashboardNavbar = ({ toggleSidebar }) => {
                                 </NavDropdown>
 
                                 <NavDropdown title="Startups" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item to="/applications">All Startups</NavDropdown.Item>
+                                    <NavDropdown.Item href="/applications">All Startups</NavDropdown.Item>
+                                    <NavDropdown.Item href="#action1">
+                                        Another action
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Divider />
+                                    <NavDropdown.Item href="#action2">
+                                        Something else here
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+
+                                <NavDropdown title="Mentorships" id="navbarScrollingDropdown">
+                                    <NavDropdown.Item href="/mentorships">All Mentors</NavDropdown.Item>
                                     <NavDropdown.Item href="#action1">
                                         Another action
                                     </NavDropdown.Item>
