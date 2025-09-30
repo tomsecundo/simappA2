@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { User, Mentor } = require('../models/UserModel');
 
 const getUsers = async (req,res) => {
@@ -132,4 +133,4 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { updateUserProfile, getProfile, getUsers, getUserById, deleteUser };
+module.exports = { updateUserProfile, getProfile, getUsers, getUserById, deleteUser, };
