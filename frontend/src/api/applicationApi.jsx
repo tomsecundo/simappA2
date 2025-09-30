@@ -21,6 +21,11 @@ export function useApplicationApi() {
         return res.data;
     };
 
+    const updateApplication = async (id, data) => {
+        const res = await axiosInstance.put(`${API_URL}/${id}`, data, { headers: getAuthHeaders() });
+        return res.data;
+    };
+
     const updateApplicationStatus = async (id, status) => {
         const res = await axiosInstance.patch(`${API_URL}/${id}/status`, { status }, { headers: getAuthHeaders() });
         return res.data;
@@ -31,5 +36,12 @@ export function useApplicationApi() {
         return res.data;
     };
 
-    return { getApplications, getApplicationById, createApplication, updateApplicationStatus, deleteApplication };
+    return { 
+        getApplications, 
+        getApplicationById, 
+        createApplication, 
+        updateApplication,
+        updateApplicationStatus, 
+        deleteApplication 
+    };
 }

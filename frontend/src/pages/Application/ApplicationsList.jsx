@@ -11,10 +11,11 @@ function ApplicationsList() {
 
     return (
         <div className="p-4">
-            <h2>Applications</h2>
             <ErrorBanner message={error} onClose={() => setError('')} />
+                
+            <h2>Applications</h2>
+            <Link to="/applications/new" className="btn btn-primary my-3">New Application</Link>
             <ApplicationTable applications={applications} onView={(id) => navigate(`/applications/${id}`)} />
-            <Link to="/applications/new" className="btn btn-primary mt-3">New Application</Link>
         </div>
     );
 }

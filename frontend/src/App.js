@@ -13,6 +13,7 @@ import ProtectedProfile from './pages/Profile/Profile';
 import ApplicationsList from './pages/Application/ApplicationsList';
 import ApplicationDetail from './pages/Application/ApplicationDetail';
 import ApplicationForm from './pages/Application/ApplicationForm';
+import ApplicationEditForm from './components/Application/ApplicationEditForm';
 
 // Program feature
 import ProgramList from './pages/Program/ProgramList';
@@ -69,6 +70,7 @@ function App() {
                         </RequireRole>
                         } 
                     />
+                    <Route path="/applications/:id/edit" element={<ApplicationEditForm />} />
                     <Route 
                         path="/applications/apply" 
                         element={

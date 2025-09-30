@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApplicationApi } from '../../api/applicationApi';
 import { useProgramApi } from '../../api/programApi';
 import ErrorBanner from '../../components/common/ErrorBanner';
@@ -100,6 +100,7 @@ function ApplicationForm() {
                     onChange={handleChange} 
                 />
                 <button type="submit" className="btn btn-success">Submit</button>
+                <Link to="/applications" className="btn btn-secondary mt-3 m-2">Cancel</Link>
             </form>
         </div>
     );
