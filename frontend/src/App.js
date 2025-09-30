@@ -27,7 +27,6 @@ import RequireRole from './components/RequireRole';
 
 // constants
 import { UserRole } from './constants/UserRole';
-import { Navigate } from 'react-router-dom';
 
 function App() {
     return (
@@ -70,7 +69,7 @@ function App() {
                         } 
                     />
 
-                    {/* Profile */}
+                    {/* Mentorship */}
                     <Route 
                         path="/mentor" 
                         element={
@@ -79,8 +78,6 @@ function App() {
                         </RequireRole>
                         } 
                     />
-
-                    {/* Mentorship */}
                     <Route 
                         path="/mentor/update/:id" 
                         element={
@@ -90,7 +87,6 @@ function App() {
                         } 
                     />
                     <Route path="/profile" element={<Profile />} />
-                                <Route path="*" element={<Navigate to="/login" replace/>} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
             </Layout>
