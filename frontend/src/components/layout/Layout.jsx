@@ -26,16 +26,18 @@ const Layout = ({ children }) => {
             <div style={{ minHeight: '100vh' }}>
                 <DashboardNavbar toggleSidebar={toggleSidebar} />
                 <Container fluid>
-                    <div className='row'>
-                        <>
-                            {user && (
-                                <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} isOpen={sidebarOpen} closeSidebar={closeSidebar} />
-                            )}
-                        </>
-                        <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    {user ? (
+                        <div className='row'>
+                            <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} isOpen={sidebarOpen} closeSidebar={closeSidebar} />
+                            <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                                { children }
+                            </main>
+                        </div>
+                    ) : (
+                        <div className='row'>
                             { children }
-                        </main>
-                    </div>
+                        </div>
+                    )}
                 </Container>
             </div>
         </>
