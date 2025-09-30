@@ -12,8 +12,9 @@ import ProtectedProfile from './pages/Profile/Profile';
 // Application feature
 import ApplicationsList from './pages/Application/ApplicationsList';
 import ApplicationDetail from './pages/Application/ApplicationDetail';
+import ApplicationEditForm from './pages/Application/ApplicationEditForm.jsx';
 import ApplicationForm from './pages/Application/ApplicationForm';
-import ApplicationEditForm from './components/Application/ApplicationEditForm';
+// import ApplicationEditForm from './components/Application/ApplicationFormComponent';
 
 // Program feature
 import ProgramList from './pages/Program/ProgramList';

@@ -1,107 +1,58 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApplicationApi } from '../../api/applicationApi';
 import { useProgramApi } from '../../api/programApi';
 import ErrorBanner from '../../components/common/ErrorBanner';
+import ApplicationFormComponent from '../../components/Application/ApplicationFormComponent';
 
 function ApplicationForm() {
     const { createApplication } = useApplicationApi();
     const { getPrograms } = useProgramApi();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const [form, setForm] = useState({ 
-        startupName: '', 
-        program: '', 
-        applicationEmail: '', 
-        applicationPhone: '', 
-        description: '' 
+    const [form, setForm] = useState({
+        startupName: '',
+        program: '',
+        applicationEmail: '',
+        applicationPhone: '',
+        description: ''
     });
-    const [programs, setPrograms] = useState([]);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        async function loadPrograms() {
-            try {
-                const data = await getPrograms();
-                setPrograms(data);
-            } catch (err) {
-                setError("Failed to fetch programs");
-            }
-        }
-        loadPrograms();
-    }, [getPrograms]);
+    const { data: programs = [] } = useQuery({
+        queryKey: ['programs'],
+        queryFn: getPrograms,
+    });
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const mutation = useMutation({
+        mutationFn: createApplication,
+        onSuccess: () => {
+        queryClient.invalidateQueries(['applications']);
+        navigate('/applications');
+        },
+        onError: () => {
+        setError('Failed to submit application');
+        },
+    });
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            const result = await createApplication(form);
-            if (!result) {
-                setError("No response from server");
-            }
-            navigate('/applications');
-        } catch (err) {
-            setError('Failed to submit application');
-        }
+        mutation.mutate(form);
     };
 
     return (
         <div className="p-4">
             <h2>New Application</h2>
             <ErrorBanner message={error} onClose={() => setError('')} />
-            <form onSubmit={handleSubmit} className="space-y-3">
-                <input 
-                    className="form-control" 
-                    name="startupName" 
-                    placeholder="Startup Name" 
-                    value={form.startupName} 
-                    onChange={handleChange} 
-                    required 
-                />
-                <select 
-                    className="form-control" 
-                    name="program" 
-                    placeholder="Program" 
-                    value={form.program} 
-                    onChange={handleChange} 
-                    required 
-                >
-                    <option value="">Select Program</option>
-                    {programs.map((program) => (
-                        <option key={program.id} value={program.id}>
-                            {program.title}
-                        </option>
-                    ))}
-                </select>
-                <input 
-                    className="form-control" 
-                    type="email" 
-                    name="applicationEmail" 
-                    placeholder="Email" 
-                    value={form.applicationEmail} 
-                    onChange={handleChange} 
-                    required 
-                />
-                <input 
-                    className="form-control" 
-                    type="tel" 
-                    name="applicationPhone" 
-                    placeholder="Phone" 
-                    value={form.applicationPhone} 
-                    onChange={handleChange} 
-                    required 
-                />
-                <textarea 
-                    className="form-control" 
-                    name="description" 
-                    placeholder="Description" 
-                    value={form.description} 
-                    onChange={handleChange} 
-                />
-                <button type="submit" className="btn btn-success">Submit</button>
-                <Link to="/applications" className="btn btn-secondary mt-3 m-2">Cancel</Link>
-            </form>
+            <ApplicationFormComponent
+                form={form}
+                setForm={setForm}
+                onSubmit={handleSubmit}
+                programs={programs}
+                isLoading={mutation.isLoading}
+            />
         </div>
     );
 }

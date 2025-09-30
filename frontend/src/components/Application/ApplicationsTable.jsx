@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ApplicationStatus } from '../../constants/ApplicationStatus';
+import DeleteApplicationButton from './DeleteApplicationButton';
 
 function ApplicationTable({ applications, onView }) {
+    const navigate = useNavigate();
+
     if (!applications.length) return <p>No applications found.</p>;
 
     return (
@@ -32,13 +35,11 @@ function ApplicationTable({ applications, onView }) {
                             View
                         </button>
                         {[ApplicationStatus.PENDING, ApplicationStatus.UNDER_REVIEW].includes(app.status) && (
-                            <Link
-                                to={`/applications/${app._id}/edit`}
-                                className="btn btn-sm btn-warning ms-2"
-                            >
+                            <Link to={`/applications/${app._id}/edit`} className="btn btn-sm btn-warning ms-2">
                                 Edit
                             </Link>
                         )}
+                        <DeleteApplicationButton applicationId={app._id} className="btn btn-sm btn-danger ms-2"/>
                     </td>
                 </tr>
                 ))}

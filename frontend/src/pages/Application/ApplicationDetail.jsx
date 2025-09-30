@@ -5,6 +5,8 @@ import { useApplicationApi } from '../../api/applicationApi';
 // import FeedbackForm from '../components/FeedbackForm';
 // import FeedbackList from '../components/FeedbackList';
 import ErrorBanner from '../../components/common/ErrorBanner';
+import DeleteApplicationButton from '../../components/Application/DeleteApplicationButton';
+
 function ApplicationDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -103,20 +105,21 @@ function ApplicationDetail() {
         <div className="mb-8">
             <h2 className="text-xl font-semibold mb-3">Update Application Status</h2>
             <div className="flex flex-wrap gap-2">
-            {['Pending', 'Under Review', 'Accepted', 'Rejected'].map((status) => (
-                <button
-                key={status}
-                onClick={() => handleStatusChange(status)}
-                disabled={updateStatusMutation.isLoading || application.status === status}
-                className={`px-4 py-2 rounded ${
-                    application.status === status
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                }`}
-                >
-                {status}
-                </button>
-            ))}
+                {['Pending', 'Under Review', 'Accepted', 'Rejected'].map((status) => (
+                    <button
+                    key={status}
+                    onClick={() => handleStatusChange(status)}
+                    disabled={updateStatusMutation.isLoading || application.status === status}
+                    className={`px-4 py-2 rounded ${
+                        application.status === status
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                    }`}
+                    >
+                    {status}
+                    </button>
+                ))}
+                <DeleteApplicationButton applicationId={application._id} onDelete={() => navigate('/applications')} className="px-4 py-2 rounded bg-red-500 text-gray-100"/>
             </div>
         </div>
 
