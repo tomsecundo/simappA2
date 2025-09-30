@@ -56,14 +56,16 @@ class ApplicationController {
         }
     }
 
-    async updateStatus(req, res, next) {
+    async updateApplicationStatus(req, res, next) {
         try {
+            const { id } = req.params;
             const { status } = req.body;
+
             if (!Object.values(ApplicationStatus).includes(status)) {
-                return status(400).json({ message: "Invalid status value" });
+                return res.status(400).json({ message: "Invalid status value" });
             }
 
-            const updated = await ApplicationRepo.update(req.params.id, { status });
+            const updated = await ApplicationRepo.update(id, status);
             if (!updated) {
                 return res.status(404).json({ message: "Application not found" });
             }

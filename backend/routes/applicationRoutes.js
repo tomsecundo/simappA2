@@ -13,7 +13,7 @@ router.post('/', protect, validateApplication, ApplicationController.create);
 router.get('/', protect, ApplicationController.getAll);
 router.get('/:id', protect, ApplicationController.getById);
 router.put('/:id', protect, ApplicationController.update);
-router.patch('/:id/status', protect, ApplicationController.updateStatus);
+router.patch('/:id/status', protect, ApplicationController.updateApplicationStatus);
 router.delete('/:id', protect, ApplicationController.delete);
 
 module.exports = router;
