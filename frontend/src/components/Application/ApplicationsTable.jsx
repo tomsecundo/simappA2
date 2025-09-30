@@ -7,8 +7,8 @@ function ApplicationsTable({ applications = [], onView }) {
 
     return (
         <>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
+            <div className="table-responsive">
+                <table className="table table-striped table-hover">
                     <thead>
                         <tr>
                         <th scope="col">Startup</th>

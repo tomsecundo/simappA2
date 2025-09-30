@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // layout
-import Layout from './components/layout/Layout';
+import Layout from './components/layout/Layout.jsx';
 
 // pages
 import Unauthorized from './pages/Unauthorized';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import ProtectedProfile from './pages/Profile/Profile';
+import Profile from './pages/Profile/Profile';
 
 // Application feature
 import ApplicationsList from './pages/Application/ApplicationsList';
@@ -82,14 +82,7 @@ function App() {
                     />
 
                     {/* Profile */}
-                    <Route 
-                        path="/profile" 
-                        element={
-                        <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR, UserRole.STARTUP]}>
-                            <ProtectedProfile />
-                        </RequireRole>
-                        } 
-                    />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
             </Layout>
