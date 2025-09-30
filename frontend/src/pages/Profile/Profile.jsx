@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../services/axiosConfig';
-import RequireAuth from '../../components/RequireAuth';
 import { UserRole } from '../../constants/UserRole';
 
 const Profile = () => {
@@ -80,12 +79,12 @@ const Profile = () => {
       }
     };
 
-    fetchProfile();
-  }, [user]);
+        fetchProfile();
+    }, [user]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
     const payload = ifMentor
     ? {
@@ -150,11 +149,11 @@ const Profile = () => {
     }
   };
 
-  if (loading) {
-    return <div className="text-center mt-20">Loading...</div>;
-  }
+    if (loading) {
+        return <div className="text-center mt-20">Loading...</div>;
+    }
 
-  const canEditRole = user && user.role === UserRole.ADMIN;
+    const canEditRole = user && user.role === UserRole.ADMIN;
 
   return (
     <div className="max-w-md mx-auto mt-20">
@@ -257,6 +256,7 @@ const Profile = () => {
   );
 };
 
+<<<<<<< HEAD
 // export default Profile;
 export default function ProtectedProfile() {
   return (
@@ -265,3 +265,6 @@ export default function ProtectedProfile() {
     </RequireAuth>
   );
 };
+=======
+export default Profile;
+>>>>>>> origin/tempLayout
