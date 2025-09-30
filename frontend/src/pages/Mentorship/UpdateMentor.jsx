@@ -43,7 +43,7 @@ const UpdateMentor = () => {
         ...(formData.password ? {password: formData.password} : {}),
         firstName: formData.firstName,
         lastName: formData.lastName,
-        number: formData.number,
+        number: formData.number || undefined,
         expertise: formData.expertise || undefined,
         affiliation: formData.affiliation || undefined,
         address: formData.address || undefined,

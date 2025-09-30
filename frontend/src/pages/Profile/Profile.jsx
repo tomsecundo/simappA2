@@ -27,7 +27,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   const ifMentor = formData.role === UserRole.MENTOR || user?.role === UserRole.MENTOR;
-  const ifAdmin = user && user.role === UserRole.ADMIN;
 
   useEffect(() => {
     // Fetch profile data from the backend
