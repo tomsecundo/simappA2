@@ -1,7 +1,7 @@
-const { Report, ApplicationStatus } = require('../models/Application');
+const { Report, phaseStatus } = require('../models/Report');
 const crypto = require('crypto');
 
-// Generate a unique application ID
+// Generate a unique  ID
 const generateReportId = async () => {
     const timestamp = new Date().getTime().toString();
     const randomStr = crypto.randomBytes(4).toString('hex');
@@ -9,7 +9,7 @@ const generateReportId = async () => {
     
     // Make sure the ID is unique
     const existingReport = await Report.findOne({ reportId });
-    if (existingApplication) {
+    if (existingReport) {
         return generateReportId();
     }
     
@@ -131,6 +131,7 @@ module.exports = {
     createReport, 
     getAllReports,
     getReportById,
+    getReportByApplicationId,
     updateReport,
     deleteReport
 };

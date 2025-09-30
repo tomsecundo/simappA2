@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const phaseStatus = {
+    PENDING: 'Pending',
     SUBMITTED: 'Submitted',
     REVIEWED: 'Reviewed',
     COMPLETE: 'Complete'
@@ -8,6 +9,7 @@ const phaseStatus = {
 const reportSchema = new mongoose.Schema({
     reportId: { type: String, required: true, unique: true },
     applicationId: { type: String, required: true, unique: true },
+    mentorEmail: { type: String, required: true, unique: true },
     submissionDate: { type: Date, default: Date.now },
     phase1: {
         type: String,

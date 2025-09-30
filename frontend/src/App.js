@@ -4,10 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 
 // pages
-import Unauthorized from './pages/Unauthorized';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Profile from './pages/Profile/Profile';
+import Unauthorized from './pages/Unauthorized';
 
 // Application feature
 import ApplicationsList from './pages/Application/ApplicationsList';
@@ -15,12 +14,19 @@ import ApplicationDetail from './pages/Application/ApplicationDetail';
 import ApplicationEditForm from './pages/Application/ApplicationEditForm';
 import ApplicationForm from './pages/Application/ApplicationForm';
 
+// Mentorship feature
 import ProtectedMentors from './pages/Mentorship/Mentor';
 import ProtectedUpdateMentor from './pages/Mentorship/UpdateMentor';
 
 // Program feature
 import ProgramList from './pages/Program/ProgramList';
 import ProgramForm from './pages/Program/ProgramForm';
+
+// Report feature
+import Reports from './pages/Reports/Reports';
+
+// Profile feature
+import Profile from './pages/Profile/Profile';
 
 // Guards
 import RequireRole from './components/RequireRole';
@@ -86,6 +92,10 @@ function App() {
                         </RequireRole>
                         } 
                     />
+
+                    {/* Reports */}
+                    <Route path="/reports" element={<Reports />} />
+
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
