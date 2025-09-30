@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User, UserRole } = require('../models/UserModel');
+const { User, Mentor, UserRole } = require('../models/UserModel');
 
 // const protect = async (req, res, next) => {
 //   let token;
@@ -19,19 +19,22 @@ const { User, UserRole } = require('../models/UserModel');
 
 const protect = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
+    const auth = req.headers.authorization || '';
+    if (!auth.startsWith('Bearer')) {
       return res.status(401).json({ message: 'Not authorized, no token' });
     }
-
+    const token = auth.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
-
-    if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+    
+    let account = await User.findById(decoded.id).select('-password');
+    if (!account) {
+      account = await Mentor.findById(decoded.id).select('-password');
     }
+    if (!account) {
+      return res.status(401).json({message: 'User not found'});
+    }
+    req.user = account;
 
-    req.user = user;
     next();
   } catch (error) {
     console.error(error);
