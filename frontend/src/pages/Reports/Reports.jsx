@@ -12,7 +12,7 @@ const Reports = () => {
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('All');
   
-  // Fetch applications
+  // Fetch reports
   useEffect(() => {
     const fetchReport = async () => {
       try {

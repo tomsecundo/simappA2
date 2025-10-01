@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { 
+    getAllProgress,
     createProgress, 
     getProgressById,
-    updateReport
-} = require('../controllers/reportController');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
+    updateProgress
+} = require('../controllers/progressController');
+const { protect } = require('../middleware/authMiddleware');
 
-// Public route for submitting applications
+// Public route for posting progress
+router.get('/', getAllProgress);
 router.post('/new', createProgress);
 
 // Protected routes for managing applications
 router.get('/:id', protect, getProgressById);
-router.patch('/:id/status', protect, updateReport);
+router.patch('/:id/status', protect, updateProgress);
 
 module.exports = router;

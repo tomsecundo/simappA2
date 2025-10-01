@@ -1,4 +1,4 @@
-// src/pages/Reports.jsx
+// src/pages/Progress.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -6,45 +6,51 @@ import axiosInstance from '../../services/axiosConfig';
 
 const Progress = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const [reports, setReports] = useState([]);
+  const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [statusFilter, setStatusFilter] = useState('All');
   
-  // Fetch applications
+  // Fetch progress
   useEffect(() => {
-    const fetchReport = async () => {
+    const fetchProgress = async (res, req) => {
       try {
+        
+        //const { id } = req.params;
         const response = await axiosInstance.get('/api/progress', {
           headers: { Authorization: `Bearer ${user.token}` }
         });
-        setReports(response.data);
+        
+        setProgress(response.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch progress');
+        setError(err.message + ': Failed to fetch progress');
          
         setLoading(false);
       }
     };
     
     
-    fetchReport();
+    fetchProgress();
   }, [user]);
-  
-  // Handle view application details
-  const handleViewApplication = (id) => {
-    navigate(`/progress/${id}`);
-  };
-  
-  // Filter applications by status
-  const filteredApplications = statusFilter === 'All' 
-    ? reports 
-    : reports.filter(app => app.status === statusFilter);
+
   
   // Format date for display
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+   // Phase Color Logic
+   const getPhaseClass = (status) => {
+    switch (status) {
+      case 'Completed':
+        return 'bg-green-500';
+      case 'Ongoing':
+        return 'bg-yellow-500';
+      case 'Not Started':
+        return 'bg-gray-300';
+      default:
+        return 'bg-gray-300';
+    }
   };
   
   if (loading) return <div className="text-center py-10">Loading progress...</div>;
@@ -58,68 +64,72 @@ const Progress = () => {
       </div>
       
       <div className="overflow-x-auto bg-white shadow-md rounded">
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
-                Startup Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
-                Program
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
-                Submission Date
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredApplications.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
-                  No applications found
-                </td>
-              </tr>
-            ) : (
-              filteredApplications.map((application) => (
-                <tr key={application._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {application.startupName}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {application.programApplied}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(application.submissionDate)}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      application.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                      application.status === 'Under Review' ? 'bg-blue-100 text-blue-800' :
-                      application.status === 'Accepted' ? 'bg-green-100 text-green-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {application.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button
-                      onClick={() => handleViewApplication(application._id)}
-                      className="text-indigo-600 hover:text-indigo-900 font-medium"
-                    >
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        
+        {/* Progress Bar */}
+        <div className="w-full flex mb-4">
+          {progress.length > 0 ? (
+            progress.map((progress) => (
+              <div
+               
+                className={`flex-1 h-6 mx-1 rounded-lg ${getPhaseClass(progress.phase1)}`}
+              >
+                <span className="text-white text-center block py-1">{"Phase 1"}</span>
+              </div>
+              
+            ))
+          ) : (
+            <div>No progress data available</div>
+          )}
+          {progress.length > 0 ? (
+            progress.map((progress) => (
+              <div
+               
+                className={`flex-1 h-6 mx-1 rounded-lg ${getPhaseClass(progress.phase2)}`}
+              >
+                <span className="text-white text-center block py-1">{"Phase 2"}</span>
+              </div>
+              
+            ))
+          ) : (
+            <div>No progress data available</div>
+          )}
+          {progress.length > 0 ? (
+            progress.map((progress) => (
+              <div
+               
+                className={`flex-1 h-6 mx-1 rounded-lg ${getPhaseClass(progress.phase3)}`}
+              >
+                <span className="text-white text-center block py-1">{"Phase 3"}</span>
+              </div>
+              
+            ))
+          ) : (
+            <div>No progress data available</div>
+          )}
+          {progress.length > 0 ? (
+            progress.map((progress) => (
+              <div
+               
+                className={`flex-1 h-6 mx-1 rounded-lg ${getPhaseClass(progress.phase4)}`}
+              >
+                <span className="text-white text-center block py-1">{"Phase 4"}</span>
+              </div>
+              
+            ))
+          ) : (
+            <div>No progress data available</div>
+          )}
+        </div>
+
+        {/* Optional: Showing progress data below */}
+        <div className="space-y-4">
+          {progress.map((progress) => (
+            <div>
+              <p>Application ID: {progress.applicationId}</p>
+              <p>Mentor: {progress.mentorEmail}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
