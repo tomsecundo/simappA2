@@ -1,6 +1,14 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { UserModel } = require('../models/UserModel');
+
+const User = require('../domain/UserDomain');
+const Mentor = require('../domain/MentorDomain');
+
+const UserRepo = require('../repositories/UserRepo');
+const MentorRepo = require('../repositories/MentorRepo');
+const { UserRole } = require('../models/UserModel');
+
+// const { UserModel } = require('../models/UserModel');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -8,58 +16,56 @@ const generateToken = (id) => {
 
 // register a user  
 // role can be 'startup' or 'mentor'
-// role cannot be changed after registration
 const registerUser = async (req, res) => {
-    // const{name, email, role, password, firstName, lastName, number, expertise, affiliation, address} = req.body;
-    const{ name, email, role, password, university, address } = req.body;
+    const{name, email, role, password, firstName, lastName, number, expertise, affiliation, address, programs} = req.body;
 
     try {
-        //     if (role === 'Mentor' || (firstName && lastName && number)) {
-        //         if (!email || !password || !firstName || !lastName || !number) {
-        //             return res.status(400).json({message: 'Missing required mentor fields'});
-        //     }
-        //     const mentorExists = await Mentor.findOne({email});
-        //     if (mentorExists) return res.status(400).json ({message: 'User already exists'});
-            
-        //     const mentor = await Mentor.create ({
-        //         role: 'Mentor',
-        //         email,
-        //         password,
-        //         firstName,
-        //         lastName,
-        //         number,
-        //         expertise,
-        //         affiliation,
-        //         address
-        //     });
-        //     return res.status(201).json({
-        //         id: mentor.id,
-        //         name: `${mentor.firstName} ${mentor.lastName}`,
-        //         email: mentor.email,
+        if (!email || !password || !role) {
+            return res.status(400).json({ message: "Missing required inputs"});
+        }
 
-        //         role: mentor.role,
-        //         token: generateToken(mentor.id)
-        //     });
-        // }
-        // const userExists = await User.findOne({email});
-        // if (userExists) return res.status(400).json({message:'User already exists'});
-
-        // const user = await User.create({ name, email, role, password });
-
-        const userExists = await UserModel.findOne({ email });
+        const userExists = await UserRepo.findByEmail(email);
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-        const user = await UserModel.create({ name, email, role, password,});
+        if (role === UserRole.MENTOR) {
+            const mentorName = `${firstName.trim()} ${lastName.trim()}`;
+            const mentor = new Mentor({
+                name: mentorName, 
+                email, password, 
+                role: UserRole.MENTOR,
+                firstName, 
+                lastName, 
+                number: number || '', 
+                expertise: expertise || '',
+                affiliation: affiliation || '', 
+                address: address || '', 
+                programs: programs || [],
+            });
+            const saveMentor = await MentorRepo.create(mentor);
+            
+            return res.status(201).json({
+                id: saveMentor.id,
+                name: saveMentor.name,
+                email: saveMentor.email,
+                role: saveMentor.role,
+                token: generateToken(saveMentor.id),
+            });
+        } else if (role === UserRole.STARTUP) {
+            const user = new User({ name, email, role: UserRole.STARTUP, password });
+            const saveUser = await UserRepo.create(user);
 
-        res.status(201).json({ 
-            id: user.id, 
-            name: user.name, 
-            email: user.email, 
-            role: user.role, 
-            token: generateToken(user.id)
-        });
+            return res.status(201).json({
+                id: saveUser.id,
+                name: saveUser.name,
+                email: saveUser.email,
+                role: saveUser.role,
+                token: generateToken(saveUser.id),
+            });
+        } else {
+            return res.status(400).json({ message: "Invalid role."});
+        }
     } catch (error) {
-        res.status(500).json({ 
+        return res.status(500).json({ 
             message: 'Server error during registration', 
             error: error.message 
         });
@@ -69,31 +75,12 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
-        // let account = await Mentor.findOne({email});
-        // if (!account) account = await User.findOne({email});
-        // if (!account) return res.status(401).json({message: 'Invalid email or password'});
-        
-        // const ok = await bcrypt.compare(password, account.password);
-        // if (!ok) return res.status(401).json({message:'Invalid email or password'});
-        // const name = account.firstName
-        //     ? `${account.firstName} ${account.lastName}`.trim()
-        //     : account.name;
-
-        // return res.json({ 
-        //         id: account.id, 
-        //         name, 
-        //         email: account.email, 
-        //         role: account.role,
-        //         token: generateToken(account.id) 
-        //     });
-
-        const user = await UserModel.findOne({ email});
+        const user = await UserRepo.findByEmail(email);
         if (!user) return res.status(401).json({ message: "Invalid email or password" });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-        
         return res.json({ 
             id: user.id, 
             name: user.name, 
@@ -101,13 +88,33 @@ const loginUser = async (req, res) => {
             role: user.role,
             token: generateToken(user.id) 
         });
-        
     } catch (error) {
-        res.status(500).json({ 
+        return res.status(500).json({ 
             message: 'Server error during login', 
             error: error.message,
         });
     }
 };
 
-module.exports = { registerUser, loginUser };
+const getProfile = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ message: 'Not authorized' });
+
+        res.json({
+            id: req.user._id,
+            name: req.user.name,
+            email: req.user.email,
+            role: req.user.role,
+            ...(req.user.role === UserRole.MENTOR ? {
+                firstName: req.user.firstName,
+                lastName: req.user.lastName,
+                expertise: req.user.expertise,
+                affiliation: req.user.affiliation,
+            } : {})
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { registerUser, loginUser, getProfile };

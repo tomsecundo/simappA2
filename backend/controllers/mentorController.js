@@ -12,6 +12,7 @@ class MentorController {
             next(error);
         }
     }
+    
     async getProfile(req, res, next) {
         try {
             if (!req.user) {

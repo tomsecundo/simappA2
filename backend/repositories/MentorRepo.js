@@ -1,8 +1,8 @@
 const MentorModel = require('../models/MentorModel');
 
 class MentorRepo {
-    async create(data) {
-        return await MentorModel.create(data);
+    async create(mentorData) {
+        return await MentorModel.create(mentorData);
     }
 
     async findAll() {
@@ -16,7 +16,7 @@ class MentorRepo {
     async addProgram(id, programId) {
         return MentorModel.findByIdAndUpdate(
             id,
-            { $addToSet: { programs: { $each: programId } } },
+            { $addToSet: { programs: programId } },
             { new: true }
         ).populate('programs');
     }
@@ -24,7 +24,7 @@ class MentorRepo {
     async removeProgram(id, programId) {
         return MentorModel.findByIdAndUpdate(
             id,
-            { $pull: { programs: { $in: programId } } },
+            { $pull: { programs: programId } },
             { new: true }
         ).populate('programs');
     }

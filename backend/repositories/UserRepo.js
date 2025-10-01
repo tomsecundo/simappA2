@@ -1,10 +1,8 @@
-// repositories/UserRepo.js
 const { UserModel } = require('../models/UserModel');
 
 class UserRepo {
     async create(userData) {
-        const user = new UserModel(userData);
-        return user.save();
+        return UserModel.create(userData);
     }
 
     async findAll() {
@@ -16,11 +14,10 @@ class UserRepo {
     }
 
     async findByEmail(email) {
-        return UserModel.findOne({ email }).select('+password'); // needed for login
+        return UserModel.findOne({ email }).select('+password');
     }
 
     async updateById(id, updates) {
-        delete updates.role; // // Prevent role changes (immutable)
         return UserModel.findByIdAndUpdate(id, updates, {
             new: true,
             runValidators: true,
