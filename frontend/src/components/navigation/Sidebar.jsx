@@ -22,21 +22,21 @@ const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
             label: 'Applications',
             children: [
                 { label: 'All Applications', path: '/applications' },
-                { label: 'Pending Applications', path: '/applications/pending' },
-                { label: 'Accepted Applications', path: '/applications/accepted' },
+                // { label: 'Pending Applications', path: '/applications/pending' },
+                // { label: 'Accepted Applications', path: '/applications/accepted' },
             ],
         },
         {
             label: 'Programs',
             children: [
                 { label: 'All Programs', path: '/programs' },
-                { label: 'Create Program', path: '/programs/create' },
+                { label: 'Create Program', path: '/programs/new' },
             ],
         },
         {
             label: 'Mentors',
             children: [
-                { label: 'All Mentors', path: '/mentors' },
+                { label: 'All Mentors', path: '/mentor' },
                 { label: 'Enroll in Program', path: '/mentors/enroll' },
             ],
         },

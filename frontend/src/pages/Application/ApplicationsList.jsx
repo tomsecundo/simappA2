@@ -4,7 +4,7 @@ import ApplicationTable from '../../components/Application/ApplicationsTable';
 // import ErrorBanner from '../../components/common/ErrorBanner';
 
 function ApplicationsList() {
-    const { applicationsQuery, deleteApplication } = useApplicationsHook();
+    const { applicationsQuery } = useApplicationsHook();
     const { data: applications = [], isLoading, error } = applicationsQuery;
     
     const navigate = useNavigate();

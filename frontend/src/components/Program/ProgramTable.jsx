@@ -1,73 +1,61 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useProgramApi } from "../../api/programApi";
-import ErrorBanner from "../common/ErrorBanner";
+import { useProgramsHook } from "../../hooks/programHook";
 
-function ProgramTable({ programs, reload, loading }) {
-    const { deleteProgram } = useProgramApi();
+function ProgramTable({ programs }) {
+    const { deleteProgram } = useProgramsHook();
     const [error, setError] = useState("");
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this program?")) return;
         try {
-            await deleteProgram(id);
-            if(reload) reload();
+            await deleteProgram.mutateAsync(id);
         } catch (err) {
-            if (err.response?.status === 401) {
-                setError("Unauthorized: please log in again.");
-            } else {
-                setError("Failed to delete program.");
-            }
+            setError("Failed to delete program.");
         }
     };
-    
-    if (loading) return <p>Loading programs...</p>;
+
+    if (!programs.length) return <p>No programs available.</p>;
 
     return (
-        <>
-            <div>
-                <ErrorBanner message={error} onClose={() => setError("")} />
-
-                {programs.length === 0 ? (
-                    <p>No programs available.</p>
-                ) : (
-                    <table className="table table-striped table-bordered">
-                    <thead className="table-light">
-                        <tr>
-                        <th>Title</th>
-                        <th>Dates</th>
-                        <th style={{ width: "150px" }}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {programs.map((p) => (
-                        <tr key={p.id}>
-                            <td>{p.title}</td>
-                            <td>
-                            {new Date(p.startDate).toLocaleDateString()} –{" "}
-                            {new Date(p.endDate).toLocaleDateString()}
+        <div className="overflow-x-auto bg-white shadow-md rounded">
+            {error && <p className="text-red-500 p-2">{error}</p>}
+            <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                    <tr>
+                        <th className="px-4 py-2 text-left">Title</th>
+                        <th className="px-4 py-2 text-left">Program Duration</th>
+                        <th className="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                    {programs.map((p) => (
+                        <tr key={p.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-2">{p.title}</td>
+                            <td className="px-4 py-2">
+                                {new Date(p.startDate).toLocaleDateString()} –{" "}
+                                {new Date(p.endDate).toLocaleDateString()}
                             </td>
-                            <td>
-                            <Link
-                                to={`/programs/${p.id}/edit`}
-                                className="btn btn-sm btn-warning me-2"
-                            >
-                                Edit
-                            </Link>
-                            <button
-                                onClick={() => handleDelete(p.id)}
-                                className="btn btn-sm btn-danger"
-                            >
-                                Delete
-                            </button>
+                            <td className="px-4 py-2 space-x-2">
+                                <Link
+                                    to={`/programs/${p.id}/edit`}
+                                    className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm"
+                                >
+                                    Edit
+                                </Link>
+                                <button
+                                    onClick={() => handleDelete(p.id)}
+                                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
-                        ))}
-                    </tbody>
-                    </table>
-                )}
-            </div>
-        </>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
+
 export default ProgramTable;

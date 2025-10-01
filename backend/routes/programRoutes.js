@@ -8,7 +8,7 @@ const { UserRole } = require('../models/UserModel');
 router.post("/", protect, hasRole(UserRole.ADMIN), validateProgram, ProgramController.create);
 router.get("/", protect, ProgramController.getAll);
 router.get("/:id", protect, ProgramController.getById);
-router.put("/:id", protect, hasRole(UserRole.ADMIN), validateProgram, ProgramController.update);
+router.put("/:id", protect, hasRole(UserRole.ADMIN), ProgramController.update);
 router.delete("/:id", protect, hasRole(UserRole.ADMIN), ProgramController.delete);
 
 module.exports = router;
