@@ -3,6 +3,7 @@ import axiosInstance from '../../services/axiosConfig';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 
+//Form with validation
 const ReportForm = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
