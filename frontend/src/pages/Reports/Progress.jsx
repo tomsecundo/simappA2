@@ -10,6 +10,8 @@ const Progress = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  const role = user.role;
+
   // Fetch progress
   useEffect(() => {
     const fetchProgress = async (res, req) => {
@@ -56,6 +58,8 @@ const Progress = () => {
   if (loading) return <div className="text-center py-10">Loading progress...</div>;
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
   
+
+
   return (
     <div className="container-fluid mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
@@ -127,6 +131,7 @@ const Progress = () => {
             <div>
               <p>Application ID: {progress.applicationId}</p>
               <p>Mentor: {progress.mentorEmail}</p>
+              <p>Startup Name: {progress.startupName}</p>
             </div>
           ))}
         </div>
