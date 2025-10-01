@@ -17,7 +17,7 @@ class MentorRepo {
         return MentorModel.findByIdAndUpdate(
             id,
             { $addToSet: { programs: programId } },
-            { new: true }
+            { new: true, runValidators: true }
         ).populate('programs');
     }
 
