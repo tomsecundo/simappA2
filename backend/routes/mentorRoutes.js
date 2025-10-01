@@ -1,15 +1,27 @@
 const express = require('express');
 const router = express.Router();
+
 const MentorController = require('../controllers/mentorController');
 const { protect, hasRole } = require('../middleware/authMiddleware');
 const { UserRole } = require('../models/UserModel');
 
-// Mentor routes
-router.get('/me', MentorController.getProfile);
+// Any routes
 router.post('/register', MentorController.create);
-router.get('/', protect, MentorController.getAll);
+
+// Mentor routes
+router.get('/profile', protect, hasRole(UserRole.MENTOR), MentorController.getProfile);
+router.put('/profile', protect, hasRole(UserRole.MENTOR), MentorController.updateProfile);
+router.put('/change-password', protect, hasRole(UserRole.MENTOR), MentorController.changePassword);
+router.post('/enroll', protect, hasRole(UserRole.MENTOR), MentorController.enrollInProgram);
+router.post('/leave', protect, hasRole(UserRole.MENTOR), MentorController.leaveProgram);
+
+// Admin, Mentor routes
+router.get('/', protect, hasRole(UserRole.ADMIN, UserRole.MENTOR), MentorController.getAll);
 router.get('/:id', protect, MentorController.getById);
-router.post('/:id/add-program', protect, MentorController.addProgram);
-router.post('/:id/remove-program', protect, MentorController.removeProgram);
+
+// Admin routes
+router.delete('/:id', protect, hasRole(UserRole.ADMIN), MentorController.deleteMentor);
+router.post('/:id/add-program', protect, hasRole(UserRole.ADMIN), MentorController.addProgram);
+router.post('/:id/remove-program', protect, hasRole(UserRole.ADMIN), MentorController.removeProgram);
 
 module.exports = router;

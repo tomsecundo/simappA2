@@ -1,52 +1,28 @@
-const { UserModel, UserRole } = require('../models/UserModel');
-const MentorModel = require('../models/MentorModel');
-const User = require('../domain/UserDomain');
-
-async function enrichUser(userDoc) {
-    if (!userDoc) return null;
-    const plain = userDoc.toObject ? userDoc.toObject() : userDoc;
-
-    if (plain.role === UserRole.MENTOR) {
-        const mentor = await MentorModel.findById(plain._id).populate('programs');
-        return {
-        ...plain,
-        expertise: mentor?.expertise || null,
-        programs: mentor?.programs || [],
-        };
-    }
-    return plain;
-}
+const { UserModel } = require('../models/UserModel');
 
 class UserRepo {
     async create(userData) {
-        const domainUser = new User(userData);
-        const user = new UserModel(domainUser);
-        return user.save();
+        return UserModel.create(userData);
     }
 
     async findAll() {
-        const users = await UserModel.find().select('-password');
-        return Promise.all(users.map(enrichUser));
+        return UserModel.find().select('-password');
     }
 
     async findById(id) {
-        const user = await UserModel.findById(id).select('-password');
-        return enrichUser(user);
+        return UserModel.findById(id).select('-password');
     }
 
     async findByEmail(email) {
-        const user = await UserModel.findOne({ email }).select('+password');
-        return enrichUser(user);
+        return UserModel.findOne({ email }).select('+password');
     }
 
     async updateById(id, updates) {
-        delete updates.role;
-        const user = await UserModel.findByIdAndUpdate(id, updates, {
-        new: true,
-        runValidators: true,
-        select: '-password',
+        return UserModel.findByIdAndUpdate(id, updates, {
+            new: true,
+            runValidators: true,
+            select: '-password',
         });
-        return enrichUser(user);
     }
 
     async deleteById(id) {

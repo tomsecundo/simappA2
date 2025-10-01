@@ -4,8 +4,15 @@ const { UserModel } = require('./UserModel');
 //Mentor Schema
 const MentorSchema = new mongoose.Schema(
     {
+        firstName: { type: String },
+        lastName: { type: String },
+        number: { type: String, unique: true, },
         expertise: { type: String },
-        programs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Program' }],
+        affiliaton: { type: String },
+        address: { type: String },
+        programs: [{ 
+            type: mongoose.Schema.Types.ObjectId, ref: 'Program',
+        }],
     }, 
     { timestamps: true }
 );
