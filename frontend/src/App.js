@@ -25,6 +25,7 @@ import ProgramForm from './pages/Program/ProgramForm';
 // Report feature
 import Reports from './pages/Reports/Reports';
 import ReportForm from './pages/Reports/ReportForm';
+import Progress from './pages/Reports/Progress';
 
 // Profile feature
 import Profile from './pages/Profile/Profile';
@@ -98,6 +99,7 @@ function App() {
                     <Route path="/reports" element={<Reports />} />
                     <Route path="/reports/new" element={<ReportForm />} />
 
+                    <Route path="/progress" element={<Progress />} />
 
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />

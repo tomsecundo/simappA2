@@ -19,15 +19,23 @@ const generateReportId = async () => {
 // Create a new application
 const createReport = async (req, res) => {
     try {
-        const { applicationId, submissionDate, phase1, phase2, phase3, phase4, programApplied, startupName, description, remarks } = req.body;
-
+        const { mentorEmail,
+                submissionDate,
+                phase,
+                startupName,
+                programApplied,
+                description,
+                remarks,
+                timestamps } = req.body;
+        
         // Generate a unique application ID
         const reportId = await generateReportId();
-        const report = new Report({ reportId, applicationId, submissionDate, phase1, phase2, phase3, phase4, programApplied, startupName, description, remarks });
+        const report = new Report({ reportId, mentorEmail, submissionDate, phase, programApplied, startupName, description, remarks, timestamps });
+        console.log(report);
         const submittedReport = await report.save();
         res.status(201).json(submittedReport);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to generate report', error: error.message });
+        res.status(500).json({ message: error.message, error: error.message });
     }
 };
 

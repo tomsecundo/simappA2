@@ -45,11 +45,11 @@ const DashboardNavbar = ({ toggleSidebar }) => {
 
                                 <NavDropdown title="Startups" id="navbarScrollingDropdown">
                                     <NavDropdown.Item href="/applications">All Startups</NavDropdown.Item>
-                                    <NavDropdown.Item href="/reports/new">
-                                        Submit Report
+                                    <NavDropdown.Item href="/reports">
+                                        Reports
                                     </NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item href="/reports">
+                                    <NavDropdown.Item href="/progress">
                                         View Progress
                                     </NavDropdown.Item>
                                 </NavDropdown>

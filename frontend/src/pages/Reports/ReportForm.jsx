@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import axiosInstance from '../../services/axiosConfig';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
 
 const ReportForm = () => {
-
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
-    phaseStatus: '',
+   
     mentorEmail: '',
     submissionDate: '',
-    phase1: '', 
+    phase: '', 
     startupName: '',
     programApplied: '',
-    description: '',
-    remarks: ''
+    description: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -28,12 +28,13 @@ const ReportForm = () => {
       await axiosInstance.post('/api/reports/new', formData);
       setSuccess(true);
       setFormData({
+        applicationId: '',
+        mentorEmail: '',
+        submissionDate: '',
+        phase: '', 
         startupName: '',
         programApplied: '',
-        applicationEmail: '',
-        applicationPhone: '',
-        description: '',
-        remarks: ''
+        description: ''
       });
     } catch (error) {
       // alert('Failed to save application. Please try again.');
@@ -60,7 +61,7 @@ const ReportForm = () => {
         <Form.Group className="mb-3" controlId="startupName">
           <Form.Control
             type="text"
-            placeholder="Startup Name"
+            placeholder={user.name}
             value={formData.startupName}
             onChange={(e) => setFormData({ ...formData, startupName: e.target.value })}
             required
@@ -76,20 +77,36 @@ const ReportForm = () => {
             required
           />
         </Form.Group>
-
+        <Form.Group className="mb-3" controlId="mentorEmail">
+          <Form.Control
+            type="text"
+            placeholder="Mentor Name"
+            value={formData.mentorEmail}
+            onChange={(e) => setFormData({ ...formData, mentorEmail: e.target.value })}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="submissionDate">
+          <Form.Control
+            type="date"
+            value={formData.submissionDate}
+            onChange={(e) => setFormData({ ...formData, submissionDate: e.target.value })}
+            required
+          />
+        </Form.Group>
         <Form.Group className="mb-3" controlId="applicationChoice">
          
           <Form.Control
             as="select"
             value={formData.applicationChoice}
-            onChange={(e) => setFormData({ ...formData, applicationChoice: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, phase: e.target.value })}
             required
           >
             <option value="">Select phase</option>
-            <option value="option1">Phase 1</option>
-            <option value="option2">Phase 2</option>
-            <option value="option3">Phase 3</option>
-            <option value="option4">Phase 4</option>
+            <option value="Phase 1">Phase 1</option>
+            <option value="Phase 2">Phase 2</option>
+            <option value="Phase 3">Phase 3</option>
+            <option value="Phase 4">Phase 4</option>
           </Form.Control>
         </Form.Group>
 
@@ -109,7 +126,7 @@ const ReportForm = () => {
           <Form.Control
             type="file"
             onChange={(e) => setFormData({ ...formData, applicationFile: e.target.files[0] })}
-            required
+            
           />
         </Form.Group>
         <Button variant="primary" type="submit" disabled={loading} className="w-100">
