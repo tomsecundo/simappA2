@@ -1,113 +1,155 @@
-const { Report, phaseStatus } = require('../models/Report');
-const crypto = require('crypto');
+const { Assignment, assignmentStatus } = require('../models/AssignmentModel');
 
-// Generate a unique  ID
-const generateReportId = async () => {
-    const timestamp = new Date().getTime().toString();
-    const randomStr = crypto.randomBytes(4).toString('hex');
-    const reportId = `app-${timestamp.substring(timestamp.length - 6)}-${randomStr}`;
-    
-    // Make sure the ID is unique
-    const existingReport = await Report.findOne({ reportId });
-    if (existingReport) {
-        return generateReportId();
-    }
-    
-    return reportId;
-};
-
-// Create a new application
-const createReport = async (req, res) => {
+// Create a new assignment
+const createAssignment = async (req, res) => {
     try {
-        const { applicationId, submissionDate, phase1, phase2, phase3, phase4, programApplied, startupName, description, remarks } = req.body;
+        const { title,
+                description,
+                startup,
+                applicationName,
+                phase,
+                deadline} = req.body;
+        
+        const assignment = new Assignment({
+                title,
+                description,
+                startup,
+                applicationName,
+                phase,
+                deadline,
+        });
 
-        // Generate a unique application ID
-        const reportId = await generateReportId();
-        const report = new Report({ reportId, applicationId, submissionDate, phase1, phase2, phase3, phase4, programApplied, startupName, description, remarks });
-        const submittedReport = await report.save();
-        res.status(201).json(submittedReport);
+        const submittedAssignment = await assignment.save();
+        res.status(201).json(submittedAssignment);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to generate report', error: error.message });
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'Validation failed',
+                details: Object.values(error.errors).map(e => e.message)
+            });
+        }
+        res.status(500).json({message: 'Failed to submit an assignment', error: error.message});
     }
 };
 
-// Get all applications (Read)
-const getAllReports = async (req, res) => {
+// Get all assignment (Read)
+const getAllAssignments = async (req, res) => {
     try {
-        const reports = await Report.find().sort({ submissionDate: -1 });
-        res.status(200).json(reports);
+        const assignments = await Assignment.find().sort({ deadline: -1 });
+        res.status(200).json(assignments);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch reports', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch assignments', error: error.message });
     }
 };
 
-// Get a report by reportID
-const getReportById = async (req, res) => {
+// Get an assignment by status
+const getAssignmentByStatus = async (req, res) => {
+    try {
+        const {status} = req.params;
+        const{phase} = req.query;
+
+        if (!Object.values(assignmentStatus).includes(status)) {
+            return res.status(400).json({message: 'Invalid status value'});
+        }
+        
+        const query = {status};
+        if (phase) query.phase = phase;
+
+        const assignments = await Assignment.find(query).sort({createdDateTime: -1});
+        if (!assignments.length) {
+            return res.status(404).json({message: 'No assignments found.'})
+        }
+
+        res.status(200).json(assignments);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch assignment/s', error: error.message });
+    }
+};
+
+// Get an assignment by assignmentID
+const getAssignmentById = async (req, res) => {
     try {
         const { id } = req.params;
-        const report = await Report.findById(id);
+        const assignment = await Assignment.findById(id);
         
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
+        if (!assignment) {
+            return res.status(404).json({ message: 'Assignment not found' });
         }
         
-        res.status(200).json(report);
+        res.status(200).json(assignment);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch assignment', error: error.message });
     }
 };
-// Get reports by application ID
-const getReportByApplicationId = async (req, res) => {
+// Get assignments by assignment ID
+const getAssignmentByApplicationId = async (req, res) => {
     try {
         const { id } = req.params;
-        const report = await Report.findById(id);
+
+        const assignment = await Assignment
+            .find({applicationName: id})
+            .sort({createdDateTime: -1});
         
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
+        if (!assignment.length) {
+            return res.status(404).json({ message: 'No assignments found' });
         }
         
-        res.status(200).json(report);
+        res.status(200).json(assignment);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch assignment/s', error: error.message });
     }
 };
 
-// Update application status
-const updateReport = async (req, res) => {
+// Update assignment remarks
+const updateAssignment = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
-        
-        // Validate status
-        const validStatuses = Object.values(phaseStatus);
-        if (!validStatuses.includes(status)) {
-            return res.status(400).json({ message: 'Invalid phase status value' });
+
+        if ('status' in req.body) {
+            return res.status(400).json({message: 'This is auto generated from Report Status.'});
         }
-        
-        const report = await Report.findById(id);
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
+
+        const assignment = await Assignment.findById(id);
+        if (!assignment) {
+            return res.status(404).json({ message: 'Assignment not found' });
         }
-        
-        report.phase1 = status;
-        report.phase2 = status;
-        report.phase3 = status;
-        report.phase4 = status;
-        const updatedApplication = await application.save();
-        
-        res.status(200).json(updatedApplication);
+
+        const {
+            title,
+            description,
+            startup,
+            applicationName,
+            phase,
+            deadline,
+        } = req.body; 
+
+        if (title !== undefined) assignment.title = title;
+        if (description !== undefined) assignment.description = description;
+        if (startup !== undefined) assignment.startup = startup;
+        if (applicationName !== undefined) assignment.applicationName = applicationName;
+        if (phase !== undefined) assignment.phase = phase;
+        if (deadline !== undefined) assignment.deadline = deadline;
+
+        const updatedAssignment = await assignment.save();
+        res.status(200).json(updatedAssignment);
     } catch (error) {
+         if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'Validation failed',
+                details: Object.values(error.errors).map(e => e.message)
+            });
+        }
         res.status(500).json({ message: 'Failed to update application status', error: error.message });
     }
 };
 
-// Delete application
-const deleteReport = async (req, res) => {
+// Delete assignment
+const deleteAssignment = async (req, res) => {
     try {
-        const report = await Report.findById(req.params.id);
+        const assignment = await Assignment.findById(req.params.id);
         
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
+        if (!assignment) {
+            return res.status(404).json({ message: 'Assignment not found' });
         }
         
         // Only allow admin to delete it
@@ -116,22 +158,23 @@ const deleteReport = async (req, res) => {
         //     return res.status(403).json({ message: 'Not authorized to delete this application' });
         // }
         
-        await Report.deleteOne({ _id: req.params.id });
-        res.json({ message: 'Report deleted successfully' });
+        await Assignment.deleteOne({ _id: req.params.id });
+        res.json({ message: 'Assignment deleted successfully' });
     } catch (error) {
-        console.error('Deleting report error:', error);
+        console.error('Deleting assignment error:', error);
         res.status(500).json({ 
-            message: 'Failed to delete report', 
+            message: 'Failed to delete assignment', 
             error: error.message 
         });
     }
 };
 
 module.exports = { 
-    createReport, 
-    getAllReports,
-    getReportById,
-    getReportByApplicationId,
-    updateReport,
-    deleteReport
+    createAssignment, 
+    getAllAssignments,
+    getAssignmentById,
+    getAssignmentByApplicationId,
+    getAssignmentByStatus,
+    updateAssignment,
+    deleteAssignment
 };
