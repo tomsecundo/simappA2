@@ -64,6 +64,16 @@ const DashboardNavbar = ({ toggleSidebar }) => {
                                         Something else here
                                     </NavDropdown.Item>
                                 </NavDropdown>
+                                <NavDropdown title="Session" id="navbarScrollingDropdown">
+                                    <NavDropdown.Item href="/session">Schedule Session</NavDropdown.Item>
+                                    <NavDropdown.Item href="/sessions">
+                                        Session List
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Divider />
+                                    <NavDropdown.Item href="availabilitylist">
+                                        Add Availability
+                                    </NavDropdown.Item>
+                                </NavDropdown>
                             </>
                         )}
                     </Nav>

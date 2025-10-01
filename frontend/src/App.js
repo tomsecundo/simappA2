@@ -25,6 +25,9 @@ import ProgramForm from './pages/Program/ProgramForm';
 // Report feature
 import Reports from './pages/Reports/Reports';
 
+//Availability feature
+import AvailabilityForm from './pages/Availability/Availability';
+
 // Profile feature
 import Profile from './pages/Profile/Profile';
 
@@ -33,6 +36,7 @@ import RequireRole from './components/RequireRole';
 
 // constants
 import { UserRole } from './constants/UserRole';
+import AvailabilityList from './pages/Availability/AvailabilityList';
 
 function App() {
     return (
@@ -98,6 +102,25 @@ function App() {
 
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/unauthorized" element={<Unauthorized />} />
+
+                    {/* Availability */}
+                    <Route path="/availabilitylist" element={<AvailabilityList />} />
+                    <Route 
+                        path="/availabilitylist/new" 
+                        element={
+                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
+                            <AvailabilityForm />
+                            </RequireRole>
+                        }
+                    />
+                    <Route 
+                        path="/availabilitylist/:id/edit" 
+                        element={
+                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
+                                <AvailabilityForm />
+                            </RequireRole>
+                        }
+                    />
                 </Routes>
             </Layout>
         </Router>
