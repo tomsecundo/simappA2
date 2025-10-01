@@ -3,8 +3,8 @@ class User {
         if (!name || !email || !role || !password) {
             throw new Error("Missing required fields for User");
         }
-        this.name = name.trim();
-        this.email = email.trim();
+        this.name = name;
+        this.email = email;
         this.role = role;
         this.password = password;
     }

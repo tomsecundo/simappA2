@@ -15,7 +15,6 @@ const generateToken = (id) => {
 };
 
 // register a user  
-// role can be 'startup' or 'mentor'
 const registerUser = async (req, res) => {
     const{name, email, role, password, firstName, lastName, number, expertise, affiliation, address, programs} = req.body;
 
@@ -28,11 +27,10 @@ const registerUser = async (req, res) => {
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
         if (role === UserRole.MENTOR) {
-            const mentorName = `${firstName.trim()} ${lastName.trim()}`;
+            const mentorName = `${firstName?.trim() || ''} ${lastName?.trim() || ''}`;
             const mentor = new Mentor({
                 name: mentorName, 
-                email, password, 
-                role: UserRole.MENTOR,
+                email, password, role,
                 firstName, 
                 lastName, 
                 number: number || '', 
@@ -50,8 +48,8 @@ const registerUser = async (req, res) => {
                 role: saveMentor.role,
                 token: generateToken(saveMentor.id),
             });
-        } else if (role === UserRole.STARTUP) {
-            const user = new User({ name, email, role: UserRole.STARTUP, password });
+        } else if (role === UserRole.STARTUP || role === UserRole.ADMIN) {
+            const user = new User({ name, email, role, password });
             const saveUser = await UserRepo.create(user);
 
             return res.status(201).json({
@@ -96,25 +94,25 @@ const loginUser = async (req, res) => {
     }
 };
 
-const getProfile = async (req, res) => {
-    try {
-        if (!req.user) return res.status(401).json({ message: 'Not authorized' });
+// const getProfile = async (req, res) => {
+//     try {
+//         if (!req.user) return res.status(401).json({ message: 'Not authorized' });
 
-        res.json({
-            id: req.user._id,
-            name: req.user.name,
-            email: req.user.email,
-            role: req.user.role,
-            ...(req.user.role === UserRole.MENTOR ? {
-                firstName: req.user.firstName,
-                lastName: req.user.lastName,
-                expertise: req.user.expertise,
-                affiliation: req.user.affiliation,
-            } : {})
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
-    }
-};
+//         res.json({
+//             id: req.user._id,
+//             name: req.user.name,
+//             email: req.user.email,
+//             role: req.user.role,
+//             ...(req.user.role === UserRole.MENTOR ? {
+//                 firstName: req.user.firstName,
+//                 lastName: req.user.lastName,
+//                 expertise: req.user.expertise,
+//                 affiliation: req.user.affiliation,
+//             } : {})
+//         });
+//     } catch (err) {
+//         res.status(500).json({ message: 'Server error', error: err.message });
+//     }
+// };
 
-module.exports = { registerUser, loginUser, getProfile };
+module.exports = { registerUser, loginUser };

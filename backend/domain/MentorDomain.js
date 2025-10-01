@@ -6,8 +6,8 @@ class Mentor extends User {
         
         super({ name, email, password, role: UserRole.MENTOR });
 
-        this.firstName = firstName.trim();
-        this.lastName = lastName.trim();
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.number = number || '';
         this.expertise = expertise || '';
         this.affiliation = affiliation || '';
