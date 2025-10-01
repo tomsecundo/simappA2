@@ -20,6 +20,7 @@ app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/availabilitylist', require('./routes/availabilityRoutes'));
 app.use('/api/sessions', require('./routes/sessionRoutes'));
+app.use('/api/assignment', require('./routes/assignmentRoutes'));
 ``
 // Export the app object for testing
 if (require.main === module) {
