@@ -28,6 +28,10 @@ import ReportForm from './pages/Reports/ReportForm';
 import Progress from './pages/Reports/Progress';
 import ProgressForm from './pages/Reports/ProgressForm';
 
+// Session feature
+import SessionList from './pages/Session/SessionList';
+import SessionForm from './pages/Session/SessionForm';
+
 //Availability feature
 import AvailabilityForm from './pages/Availability/Availability';
 
@@ -105,6 +109,22 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
 
                     <Route path="/unauthorized" element={<Unauthorized />} />
+                    
+                    {/* Sessions */}
+                    <Route path="/sessions" element={<SessionList />} />
+                    <Route 
+                        path="/sessions/new" 
+                        element={
+                            <SessionForm />
+                        }
+                    />
+                    <Route 
+                        path="/sessions/:id/edit" 
+                        element={
+                                <SessionForm />
+                        }
+                    />
+
 
                     {/* Availability */}
                     <Route path="/availabilitylist" element={<AvailabilityList />} />
