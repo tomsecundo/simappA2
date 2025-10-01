@@ -12,6 +12,7 @@ router.put('/change-password', protect, UserController.changePassword);
 // Admin-only
 router.get('/', protect, hasRole(UserRole.ADMIN), UserController.getAllUsers);
 router.get('/:id', protect, hasRole(UserRole.ADMIN), UserController.getUserById);
+router.put('/:id', protect, hasRole(UserRole.ADMIN), UserController.updateUserByAdmin);
 router.delete('/:id', protect, hasRole(UserRole.ADMIN), UserController.deleteUser);
 
 module.exports = router;

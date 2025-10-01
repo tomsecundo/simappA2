@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const Mentor = require('../domain/MentorDomain');
 const MentorRepo = require('../repositories/MentorRepo');
+const UserRepo = require('../repositories/UserRepo');
 const { UserRole } = require('../models/UserModel');
 
 class MentorController {
@@ -42,6 +43,44 @@ class MentorController {
             }
             res.json(mentor);
         } catch (error) {
+            next(error);
+        }
+    }
+
+    // Admin or mentor self: update mentor profile (extends user updateProfile)
+    async updateProfile(req, res, next) {
+        try {
+            if (!req.user) return res.status(401).json({ message: 'Not authorized' });
+
+            const targetId = req.params.id || req.user._id;
+
+            // Only Admin can update someone else's profile
+            if (req.user.role !== UserRole.ADMIN && req.user._id.toString() !== targetId.toString()) {
+                return res.status(403).json({ message: 'Forbidden' });
+            }
+
+            // Split updates: user-level vs mentor-level
+            const { name, email, role, address, expertise, affiliation, number } = req.body;
+
+            // Update base user fields
+            let updated = await UserRepo.updateById(targetId, { name, email, role, address, number });
+
+            // If mentor-specific fields provided
+            if (updated && (expertise || affiliation)) {
+                updated = await MentorRepo.findByIdAndUpdate(
+                    targetId,
+                    { expertise, affiliation },
+                    { new: true, runValidators: true }
+                );
+            }
+
+            if (!updated) return res.status(404).json({ message: 'Mentor not found' });
+
+            res.json(updated);
+        } catch (error) {
+            if (error.code === 11000 && error.keyPattern?.email) {
+                return res.status(400).json({ message: 'Email already exists' });
+            }
             next(error);
         }
     }

@@ -10,6 +10,7 @@ router.post('/register', MentorController.create);
 
 // Mentor routes
 router.get('/profile', protect, hasRole(UserRole.MENTOR), MentorController.getProfile);
+router.put('/profile', protect, hasRole(UserRole.MENTOR), MentorController.updateProfile);
 router.put('/change-password', protect, hasRole(UserRole.MENTOR), MentorController.changePassword);
 router.post('/enroll', protect, hasRole(UserRole.MENTOR), MentorController.enrollInProgram);
 router.post('/leave', protect, hasRole(UserRole.MENTOR), MentorController.leaveProgram);

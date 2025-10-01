@@ -74,6 +74,37 @@ class UserController {
         }
     };
 
+        /**
+     * Updates the current User
+     * @returns current updated User
+     */
+    async updateUserByAdmin(req, res, next) {
+        try {
+            // Only Admin check (extra safeguard in case route is misconfigured)
+            if (req.user.role !== UserRole.ADMIN) {
+                return res.status(403).json({ message: 'Admin access only' });
+            }
+
+            const { id } = req.params;
+            const updates = req.body;
+
+            const updatedUser = await UserRepo.updateById(id, updates);
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            res.json(updatedUser);
+        } catch (error) {
+            // Catch duplicate key errors (e.g., email conflicts)
+            if (error.code === 11000 && error.keyPattern?.email) {
+                return res.status(400).json({
+                    message: 'Email already exists. Please use a different email address.'
+                });
+            }
+            next(error);
+        }
+    }
+
     /**
      * @ self
      * @returns 
