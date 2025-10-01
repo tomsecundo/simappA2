@@ -7,11 +7,14 @@ const UserRole = {
     STARTUP: 'Startup',
 };
 
-
 //base
 const userSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
+        firstName: { type: String },
+        lastName: { type: String },
+        
+        number: { type: String, unique: true },
         email: { type: String, required: true, unique: true },
         role: {
             type: String,
@@ -29,36 +32,10 @@ userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-});
-
-//Mentor Schema
-const mentorSchema = new mongoose.Schema(
-    {
-        role: {
-            type: String,
-            enum: Object.values(UserRole),
-            required: true
-        },
-        firstName: { type: String, required: true },
-        lastName: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        number: { type: String, required: true, unique: true },
-        expertise: { type: String },
-        affiliation: { type: String },
-        address: { type: String },
-        password: { type: String, required: true }
-    }, 
-    { timestamps: true }
-);
-
-
-mentorSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
 module.exports = { 
-    User: mongoose.model('User', userSchema), 
-    Mentor: mongoose.model('Mentor', mentorSchema), UserRole, 
+    UserModel: mongoose.model('User', userSchema), 
+    UserRole
 };
