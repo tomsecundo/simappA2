@@ -1,7 +1,7 @@
 const User = require('../domain/UserDomain');
-const { UserRole } = require('../models/UserModel');
-const MentorRepo = require('../repositories/MentorRepo');
 const UserRepo = require('../repositories/UserRepo');
+const MentorRepo = require('../repositories/MentorRepo');
+const { UserRole } = require('../models/UserModel');
 
 class UserController {   
     async getAllUsers(req, res, next) {
@@ -61,8 +61,8 @@ class UserController {
                 const mentor = await MentorRepo.findById(user._id);
                 return res.json({
                     ...user.toObject(),
-                    expertise: mentor.expertise || null,
-                    programs: mentor.programs || [],
+                    expertise: mentor?.expertise || null,
+                    programs: mentor?.programs || [],
                 });
             }
 
