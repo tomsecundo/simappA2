@@ -1,5 +1,5 @@
-const ProgramModel = require("../models/ProgramModel");
 const Program = require("../domain/ProgramDomain");
+const ProgramModel = require("../models/ProgramModel");
 
 class ProgramRepo {
     async create(program) {

@@ -19,8 +19,8 @@ const registerUser = async (req, res) => {
     const{name, email, role, password, firstName, lastName, number, expertise, affiliation, address, programs} = req.body;
 
     try {
-        if (!email || !password || !role) {
-            return res.status(400).json({ message: "Missing required inputs"});
+        if (!name || !email || !password || !role) {
+            return res.status(400).json({ message: 'Missing required fields' });
         }
 
         const userExists = await UserRepo.findByEmail(email);
@@ -93,26 +93,5 @@ const loginUser = async (req, res) => {
         });
     }
 };
-
-// const getProfile = async (req, res) => {
-//     try {
-//         if (!req.user) return res.status(401).json({ message: 'Not authorized' });
-
-//         res.json({
-//             id: req.user._id,
-//             name: req.user.name,
-//             email: req.user.email,
-//             role: req.user.role,
-//             ...(req.user.role === UserRole.MENTOR ? {
-//                 firstName: req.user.firstName,
-//                 lastName: req.user.lastName,
-//                 expertise: req.user.expertise,
-//                 affiliation: req.user.affiliation,
-//             } : {})
-//         });
-//     } catch (err) {
-//         res.status(500).json({ message: 'Server error', error: err.message });
-//     }
-// };
 
 module.exports = { registerUser, loginUser };

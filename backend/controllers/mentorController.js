@@ -37,7 +37,7 @@ class MentorController {
             if (!req.user) return res.status(401).json({ message: 'Not authorized' });
             if (req.user.role !== 'Mentor') return res.status(403).json({ message: 'Access denied: not a Mentor' });
 
-            const mentor = await MentorRepo.findById(req.user.id);
+            const mentor = await MentorRepo.findById(req.user._id);
             if (!mentor) {
                 return res.status(404).json({ message: 'Mentor not found' });
             }

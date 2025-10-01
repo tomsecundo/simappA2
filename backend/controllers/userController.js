@@ -1,7 +1,5 @@
-const User = require('../domain/UserDomain');
 const UserRepo = require('../repositories/UserRepo');
-const MentorRepo = require('../repositories/MentorRepo');
-const { UserRole } = require('../models/UserModel');
+const User = require('../domain/UserDomain');
 
 class UserController {   
 
@@ -37,10 +35,10 @@ class UserController {
                 });
             }
             res.json(user);
-        } catch (error) {
-            next(error);
+        } catch (err) {
+            next(err);
         }
-    };
+    }
 
     /**
      * @access UserRole: Admin and Mentor
@@ -54,7 +52,7 @@ class UserController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
     /**
      * Updates the current User
