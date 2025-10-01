@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 const Application = require("../domain/ApplicationDomain");
 const ApplicationRepo = require('../repositories/ApplicationRepo');
-
 const { ApplicationStatus } = require('../models/ApplicationModel');
 
 class ApplicationController {
