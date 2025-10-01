@@ -19,6 +19,7 @@ app.use('/api/programs', require('./routes/programRoutes'));
 app.use('/api/applications', require('./routes/applicationRoutes'));
 app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/progress', require('./routes/progressRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 
 // Export the app object for testing
