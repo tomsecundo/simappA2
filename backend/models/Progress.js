@@ -8,7 +8,7 @@ const status = {
 };
 const progressSchema = new mongoose.Schema({
     applicationId: { type: String, required: true, unique: true },
-    mentorEmail: { type: String, required: true, unique: true },
+    mentorEmail: { type: String, required: true},
     phase1: {
         type: String,
         enum: Object.values(phaseStatus),

@@ -28,7 +28,6 @@ const ReportForm = () => {
       await axiosInstance.post('/api/reports/new', formData);
       setSuccess(true);
       setFormData({
-        applicationId: '',
         mentorEmail: '',
         submissionDate: '',
         phase: '', 

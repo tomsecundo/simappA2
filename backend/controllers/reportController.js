@@ -16,7 +16,7 @@ const generateReportId = async () => {
     return reportId;
 };
 
-// Create a new application
+// Create a new report
 const createReport = async (req, res) => {
     try {
         const { mentorEmail,
@@ -28,7 +28,7 @@ const createReport = async (req, res) => {
                 remarks,
                 timestamps } = req.body;
         
-        // Generate a unique application ID
+        // Generate a unique report ID
         const reportId = await generateReportId();
         const report = new Report({ reportId, mentorEmail, submissionDate, phase, programApplied, startupName, description, remarks, timestamps });
         console.log(report);
@@ -39,7 +39,7 @@ const createReport = async (req, res) => {
     }
 };
 
-// Get all applications (Read)
+// Get all report (Read)
 const getAllReports = async (req, res) => {
     try {
         const reports = await Report.find().sort({ submissionDate: -1 });
@@ -64,7 +64,7 @@ const getReportById = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch report', error: error.message });
     }
 };
-// Get reports by application ID
+// Get reports by report ID
 const getReportByApplicationId = async (req, res) => {
     try {
         const { id } = req.params;
@@ -80,7 +80,7 @@ const getReportByApplicationId = async (req, res) => {
     }
 };
 
-// Update application status
+// Update report remarks
 const updateReport = async (req, res) => {
     try {
         const { id } = req.params;
@@ -97,19 +97,16 @@ const updateReport = async (req, res) => {
             return res.status(404).json({ message: 'Report not found' });
         }
         
-        report.phase1 = status;
-        report.phase2 = status;
-        report.phase3 = status;
-        report.phase4 = status;
-        const updatedApplication = await application.save();
+        report.phase = status;
+        const updatedReport = await report.save();
         
-        res.status(200).json(updatedApplication);
+        res.status(200).json(updatedReport);
     } catch (error) {
         res.status(500).json({ message: 'Failed to update application status', error: error.message });
     }
 };
 
-// Delete application
+// Delete report
 const deleteReport = async (req, res) => {
     try {
         const report = await Report.findById(req.params.id);
