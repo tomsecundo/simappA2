@@ -1,5 +1,6 @@
 const UserRepo = require('../repositories/UserRepo');
 const User = require('../domain/UserDomain');
+const { UserRole } = require('../models/UserModel');
 
 class UserController {   
 

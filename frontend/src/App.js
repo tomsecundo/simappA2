@@ -30,6 +30,8 @@ import ProgressForm from './pages/Reports/ProgressForm';
 
 // Profile feature
 import Profile from './pages/Profile/Profile';
+// import UsersList from './components/User/UsersList'; // Admin only
+// import UserDetail from './components/User/UserDetail'; // Admin only
 
 // Guards
 import RequireRole from './components/RequireRole';
@@ -97,6 +99,7 @@ function App() {
                     <Route path="/progress/new" element={<ProgressForm />} />
 
                     <Route path="/profile" element={<Profile />} />
+
                     <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
             </Layout>
