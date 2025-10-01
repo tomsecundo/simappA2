@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/UserModel');
+const { User, Mentor } = require('../models/UserModel');
 
 const protect = async (req, res, next) => {
     try {
@@ -16,13 +16,18 @@ const protect = async (req, res, next) => {
 
         const token = parts[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        //reassignment
+        let reassign = await User.findById(decoded.id).select('-password');
+        if (!reassign) reassign = 
+            await Mentor.findById(decoded.id).select('-password')
+        ;
 
-        const user = await User.findById(decoded.id).select('-password');
-        if (!user) {
+        if (!reassign) {
             return res.status(401).json({ message: 'User not found' });
         }
 
-        req.user = user;
+        req.user = reassign;
         next();
     } catch (error) {
         console.error("JWT Error:", error.message);
@@ -44,13 +49,5 @@ const hasRole = (...allowedRoles) => {
     };
 };
 
-// Middleware to check for mentor role
-const mentorOnly = (req, res, next) => {
-  if (req.user && req.user.role === UserRole.MENTOR) {
-    next();
-  } else {
-    res.status(403).json({ message: 'Access denied: Mentor only' });
-  }
-};
 
-module.exports = { protect, hasRole, mentorOnly };
+module.exports = { protect, hasRole };
