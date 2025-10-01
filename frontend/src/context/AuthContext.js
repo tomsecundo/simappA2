@@ -45,15 +45,15 @@ export const AuthProvider = ({ children }) => {
 
     // Role check helper functions
     const hasRole = (requiredRole) => user && user.role === requiredRole;
+    const hasAnyRole = (requiredRoles) => user && requiredRoles.includes(user.role);
     const isAdmin = () => hasRole(UserRole.ADMIN);
     const isMentor = () => hasRole(UserRole.MENTOR);
     const isStartup = () => hasRole(UserRole.STARTUP);
 
     // Check if user has any of the required roles
-    const hasAnyRole = (requiredRoles) => user && requiredRoles.includes(user.role);
 
     // Check if user has all of the required roles
-    const hasAllRoles = (requiredRoles) => user && requiredRoles.every(role => user.role === role);
+    // const hasAllRoles = (requiredRoles) => user && requiredRoles.every(role => user.role === role);
 
     return (
         <AuthContext.Provider 
@@ -67,10 +67,9 @@ export const AuthProvider = ({ children }) => {
                 isMentor,
                 isStartup,
                 hasRole,
-                hasAnyRole,
-                hasAllRoles
+                hasAnyRole
             }}
-            >
+        >
             {children}
         </AuthContext.Provider>
     );

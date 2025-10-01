@@ -1,26 +1,19 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/UserModel');
+const { UserModel } = require('../models/UserModel');
 
 const protect = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
-        
-        if (!authHeader) {
-            return res.status(401).json({ message: 'Not authorized, no token' });
-        }
+        if (!authHeader) return res.status(401).json({ message: 'Not authorized, no token' });
 
-        const parts = authHeader.split(" ");
-        if (parts.length !== 2 || parts[0] !== "Bearer") {
+        const token = authHeader.split(" ")[1];
+        if (!token) {
             return res.status(401).json({ message: "Token format invalid"});
         }
 
-        const token = parts[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        const user = await User.findById(decoded.id).select('-password');
-        if (!user) {
-            return res.status(401).json({ message: 'User not found' });
-        }
+        const user = await UserModel.findById(decoded.id).select('-password');
+        if (!user) return res.status(401).json({ message: 'User not found' });
 
         req.user = user;
         next();
@@ -31,17 +24,12 @@ const protect = async (req, res, next) => {
 };
 
 // Role-based access control
-const hasRole = (...allowedRoles) => {
-    return (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({ message: "Not authorized" });
-        }
-
-        if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({ message: "Access denied: insufficient role" });
-        }
-        next();
-    };
+const hasRole = (...allowedRoles) => (req, res, next) => {
+    if (!req.user) return res.status(401).json({ message: "Not authorized" });
+    if (!allowedRoles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Access denied: insufficient role" });
+    }
+    next();
 };
 
 module.exports = { protect, hasRole };
