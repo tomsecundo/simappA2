@@ -15,7 +15,7 @@ const protect = async (req, res, next) => {
         const user = await UserModel.findById(decoded.id).select('-password');
         if (!user) return res.status(401).json({ message: 'User not found' });
 
-        req.user = user;
+        req.user = reassign;
         next();
     } catch (error) {
         console.error("JWT Error:", error.message);
@@ -32,13 +32,5 @@ const hasRole = (...allowedRoles) => (req, res, next) => {
     next();
 };
 
-// Middleware to check for mentor role
-const mentorOnly = (req, res, next) => {
-  if (req.user && req.user.role === UserRole.MENTOR) {
-    next();
-  } else {
-    res.status(403).json({ message: 'Access denied: Mentor only' });
-  }
-};
 
-module.exports = { protect, hasRole, mentorOnly };
+module.exports = { protect, hasRole };
