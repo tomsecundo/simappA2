@@ -1,45 +1,34 @@
 const mongoose = require('mongoose');
 
-const phaseStatus = {
-    PENDING: 'Pending',
-    SUBMITTED: 'Submitted',
-    REVIEWED: 'Reviewed',
-    COMPLETE: 'Complete'
+const assignmentStatus = {
+    ONGOING: 'Ongoing',
+    COMPLETED: 'Completed'
 };
-const reportSchema = new mongoose.Schema({
-    reportId: { type: String, required: true, unique: true },
-    applicationId: { type: String, required: true, unique: true },
-    mentorEmail: { type: String, required: true, unique: true },
-    submissionDate: { type: Date, default: Date.now },
-    phase1: {
+const assignmentSchema = new mongoose.Schema({
+    title: { type: String, required: true},
+    description:{ type: String, required: true},
+    startup: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    applicationName: { type: String, required: true },
+    phase: { type: String, required: true },
+    deadline: {type: Date},
+    status:  {
         type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    phase2: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    phase3: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    phase4: {
-        type: String,
-        enum: Object.values(phaseStatus),
-        default: phaseStatus.SUBMITTED 
-        },
-    programApplied: { type: String, required: true },
-    startupName: { type: String, required: true },
-    description: { type: String },
-    remarks: { type: String, required: true }
+        enum: Object.values(assignmentStatus),
+        default: assignmentStatus.ONGOING 
+        }
 }, {
     timestamps: { createdAt: 'createdDateTime', updatedAt: 'updatedDateTime' }
 });
 
+assignmentSchema.path('deadline').validate(function (v){
+    if (!v) return true;
+    const baseline = this.isNew
+        ? new Date()
+        : (this.createdDateTime || new Date());
+    return v >= baseline;
+}, 'Deadline must be after date creation.');
+
 module.exports = {
-    Report: mongoose.model('Report', reportSchema),
-    phaseStatus
+    Assignment: mongoose.model('Assignment', assignmentSchema),
+    assignmentStatus
 };

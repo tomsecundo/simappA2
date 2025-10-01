@@ -5,19 +5,31 @@ const {
     getAllAssignments,
     getAssignmentById,
     getAssignmentByApplicationId,
+    getAssignmentByStatus,
     updateAssignment,
     deleteAssignment
 } = require('../controllers/assignmentController');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
-// Public route for submitting applications
-router.post('/assignments', createAssignment);
+const mongoose = require('mongoose');
 
-// Protected routes for managing applications
+const validateObjectId = (req, res, next) => {
+    const {id}= req.params;
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({message:'Invalid id'});
+    }
+    next ();
+};
+
+// Protected route for submitting assignments
+router.post('/', protect, createAssignment);
+
+// Protected routes for managing assignments
 router.get('/', protect, getAllAssignments);
-router.get('/:id', protect, getAssignmentById);
-router.get('/:id', protect, getAssignmentByApplicationId);
-router.delete('/:id', protect, deleteAssignment);
-router.patch('/:id/status', protect, updateAssignment);
+router.get('/status/:status', protect, getAssignmentByStatus);
+router.get('/application/:id', protect, getAssignmentByApplicationId);
+router.get('/:id', protect, validateObjectId, getAssignmentById);
+router.delete('/:id', protect, validateObjectId, deleteAssignment);
+router.put('/:id', protect, validateObjectId, updateAssignment);
 
 module.exports = router;
