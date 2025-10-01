@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
+import { Navbar, Container, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -11,89 +11,67 @@ const DashboardNavbar = ({ toggleSidebar }) => {
         logout();
         navigate('/login');
     };
-    
+
     return (
-        <Navbar bg="dark" variant='dark' className="sticky-top bg-dark flex-md-nowrap shadow" expand="lg">
-            <Container fluid>
-                <Navbar.Brand as={Link} to="/" className='col-md-3 col-lg-2 me-0 px-3'>Startup Incubation</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        {user && (
-                            <>
-                                <NavDropdown title="Programs" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item href="/programs">All Programs</NavDropdown.Item>
-                                    <NavDropdown.Item href="#action1">
-                                        Another action
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Divider />
-                                    <NavDropdown.Item href="#action2">
-                                        Something else here
-                                    </NavDropdown.Item>
-                                </NavDropdown>
+        <Navbar bg="dark" variant="dark" className="sticky-top shadow px-3">
+            <Container fluid className="d-flex justify-content-between align-items-center">
+                {/* Brand */}
+                <Navbar.Brand as={Link} to="/" className="me-0">
+                    Startup Incubation
+                </Navbar.Brand>
 
-                                <NavDropdown title="Applications" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item href="/applications">All Applications</NavDropdown.Item>
-                                    <NavDropdown.Item href="#action1">
-                                        Another action
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Divider />
-                                    <NavDropdown.Item href="#action2">
-                                        Something else here
-                                    </NavDropdown.Item>
-                                </NavDropdown>
+                {user ? (
+                    <div className="d-flex align-items-center ms-auto">
+                        {/* Custom toggle button (mobile only) */}
+                        <button
+                            type="button"
+                            className="d-md-none bg-transparent border-0 text-white me-2"
+                            onClick={toggleSidebar}
+                            aria-label="Open menu"
+                        >
+                            {/* Standard hamburger icon */}
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
 
-                                <NavDropdown title="Startups" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item href="/applications">All Startups</NavDropdown.Item>
-                                    <NavDropdown.Item href="/reports">
-                                        Reports
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Divider />
-                                    <NavDropdown.Item href="/progress">
-                                        View Progress
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-
-                                <NavDropdown title="Mentorships" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item href="/mentorships">All Mentors</NavDropdown.Item>
-                                    <NavDropdown.Item href="#action1">
-                                        Another action
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Divider />
-                                    <NavDropdown.Item href="#action2">
-                                        Something else here
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-                            </>
-                        )}
-                    </Nav>
-                    <Nav>
-                        {!user ? (
-                            <>
-                                {/* Show Register button only to non-authenticated users */}
-                                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                                <Nav.Link 
-                                    as={Link} 
-                                    to="/register" 
-                                    className="bg-green-500 px-4 py-2 mx-2 rounded hover:bg-green-700 text-black"
-                                >
-                                    Register
-                                </Nav.Link>
-                            </>
-                            ) : (
-                                <>
-                                    <span className="text-white flex items-center mr-4">
-                                        <Nav.Link as={Link} to="/profile">Welcome, {user.name} ({user.role})</Nav.Link>
+                        {/* Desktop dropdown (only visible on md and up) */}
+                        <div className="d-none d-md-block">
+                            <NavDropdown
+                                id="user-dropdown"
+                                align="end"
+                                menuVariant="light"
+                                title={
+                                    <span className="text-white">
+                                        Welcome, <strong>{user.name}</strong> ({user.role})
                                     </span>
-                                    <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
-                                </>
-                        )}
-                    </Nav>
-                </Navbar.Collapse>
+                                }
+                            >
+                                <NavDropdown.Item as={Link} to="/profile">
+                                    Profile
+                                </NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item onClick={handleLogout}>
+                                    Logout
+                                </NavDropdown.Item>
+                            </NavDropdown>
+
+                        </div>
+                    </div>
+                ) : (
+                    <div className="ms-auto d-flex">
+                        <Link to="/login" className="nav-link text-white">
+                            Login
+                        </Link>
+                        <Link
+                            to="/register"
+                            className="bg-green-500 px-4 py-2 mx-2 rounded hover:bg-green-700 text-white text-decoration-none"
+                        >
+                            Register
+                        </Link>
+                    </div>
+                )}
             </Container>
         </Navbar>
     );
 };
-
 
 export default DashboardNavbar;

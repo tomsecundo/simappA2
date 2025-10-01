@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApplicationsHook } from '../../hooks/useApplicationsHook';
-import { useProgramsHook } from '../../hooks/useProgramsHook';
+import { useApplicationsHook } from '../../hooks/applicationHook';
+import { useProgramsHook } from '../../hooks/programHook';
 import ErrorBanner from '../../components/common/ErrorBanner';
 import ApplicationFormComponent from '../../components/Application/ApplicationFormComponent';
 

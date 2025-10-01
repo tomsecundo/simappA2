@@ -27,18 +27,24 @@ const Layout = ({ children }) => {
                 <DashboardNavbar toggleSidebar={toggleSidebar} />
                 <Container fluid>
                     {user ? (
-                        <div className='row'>
-                            <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} isOpen={sidebarOpen} closeSidebar={closeSidebar} />
+                        <div className="row">
+                            <Sidebar
+                                activeItem={activeItem}
+                                setActiveItem={setActiveItem}
+                                isOpen={sidebarOpen}
+                                closeSidebar={closeSidebar}
+                            />
                             <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                                { children }
+                                {children}
                             </main>
                         </div>
                     ) : (
-                        <div className='row'>
-                            { children }
+                        <div className="row">
+                            <main className="col-12">{children}</main>
                         </div>
                     )}
                 </Container>
+
             </div>
         </>
     );

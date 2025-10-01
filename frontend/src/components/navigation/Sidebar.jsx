@@ -1,67 +1,149 @@
-import React from 'react';
-import SidebarMenu from 'react-bootstrap-sidebar-menu';
-import { Link } from 'react-router-dom';
-import { BsHouse, BsGear, BsPerson } from "react-icons/bs";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
-    const menuItems = [
-        { icon: '🏠', label: 'Dashboard', active: true },
-        { icon: '📄', label: 'Orders' },
-        { icon: '🛍️', label: 'Products' },
-        { icon: '👥', label: 'Customers' },
-        { icon: '📊', label: 'Reports' },
-        { icon: '🔗', label: 'Integrations' },
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+    const [openMenu, setOpenMenu] = useState(null);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+        closeSidebar();
+    };
+
+    if (!user) return null;
+
+    // Hardcoded frontend menu paths (mapped to backend APIs internally by pages)
+    const menus = [
+        { label: 'Dashboard', path: '/dashboard' },
+        {
+            label: 'Applications',
+            children: [
+                { label: 'All Applications', path: '/applications' },
+                { label: 'Pending Applications', path: '/applications/pending' },
+                { label: 'Accepted Applications', path: '/applications/accepted' },
+            ],
+        },
+        {
+            label: 'Programs',
+            children: [
+                { label: 'All Programs', path: '/programs' },
+                { label: 'Create Program', path: '/programs/create' },
+            ],
+        },
+        {
+            label: 'Mentors',
+            children: [
+                { label: 'All Mentors', path: '/mentors' },
+                { label: 'Enroll in Program', path: '/mentors/enroll' },
+            ],
+        },
+        {
+            label: 'Users',
+            children: [
+                { label: 'All Users', path: '/users' },
+                { label: 'Profile', path: '/user/profile' },
+            ],
+        },
+        {
+            label: 'Admin',
+            children: [
+                { label: 'All Accounts', path: '/admin/accounts' },
+                { label: 'Assign Role', path: '/admin/assign-role' },
+                { label: 'Promote to Mentor', path: '/admin/promote-mentor' },
+            ],
+        },
+        {
+            label: 'Progress',
+            children: [
+                { label: 'All Progress', path: '/progress' },
+                { label: 'New Progress', path: '/progress/new' },
+            ],
+        },
+        {
+            label: 'Reports',
+            children: [
+                { label: 'All Reports', path: '/reports' },
+                { label: 'New Report', path: '/reports/new' },
+            ],
+        },
     ];
 
-    const reportsSubmenu = [
-        { label: 'Current month' },
-        { label: 'Last quarter' },
-        { label: 'Social engagement' },
-        { label: 'Year-end sale' },
-    ];
+    const toggleMenu = (label) => {
+        setOpenMenu(openMenu === label ? null : label);
+    };
 
     const sidebarContent = (
-        <div className='sidebar-content'>
-            <ul className='nav flex-column'>
-                {menuItems.map((item, index) => (
-                    <li className='nav-item' key={index}>
-                        <a
-                            className={`nav-link ${item.active ? 'active' : ''}`}
-                            aria-current={item.active ? 'page' : undefined}
-                            href={`#${item.label.toLowerCase()}`}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setActiveItem(item.label);
-                                closeSidebar();
-                            }}
-                        >
-                            <span style={{ marginRight: '8px' }}>{item.icon}</span>
-                            {item.label}
-                        </a>
+        <div className="sidebar-content">
+            <ul className="nav flex-column">
+                {menus.map((menu, idx) => (
+                    <li key={idx} className="nav-item">
+                        {menu.children && menu.children.length > 0 ? (
+                            <>
+                                <button
+                                    className="nav-link w-100 text-start"
+                                    onClick={() => toggleMenu(menu.label)}
+                                >
+                                    {menu.label}
+                                </button>
+                                {openMenu === menu.label && (
+                                    <ul className="nav flex-column ms-3">
+                                        {menu.children.map((child, i) => (
+                                            <li key={i} className="nav-item">
+                                                <Link
+                                                    to={child.path}
+                                                    className={`nav-link ${
+                                                        activeItem === child.label ? 'active' : ''
+                                                    }`}
+                                                    onClick={() => {
+                                                        setActiveItem(child.label);
+                                                        closeSidebar();
+                                                    }}
+                                                >
+                                                    {child.label}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </>
+                        ) : (
+                            <Link
+                                to={menu.path}
+                                className={`nav-link ${activeItem === menu.label ? 'active' : ''}`}
+                                onClick={() => {
+                                    setActiveItem(menu.label);
+                                    closeSidebar();
+                                }}
+                            >
+                                {menu.label}
+                            </Link>
+                        )}
                     </li>
                 ))}
             </ul>
 
-            <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                <span>Saved reports</span>
-                <a className="link-secondary" href="#add" aria-label="Add a new report">
-                <span style={{ fontSize: '20px' }}>+</span>
-                </a>
-            </h6>
-            <ul className="nav flex-column mb-2">
-                {reportsSubmenu.map((item, index) => (
-                <li className="nav-item" key={index}>
-                    <a 
-                    className="nav-link" 
-                    href={`#${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+            {/* Mobile-only user links */}
+            <div className="mt-4 px-3 border-top pt-3 d-md-none">
+                <p className="text-sm text-gray-600 mb-2">
+                    Welcome, <strong>{user.name}</strong> ({user.role})
+                </p>
+                <Link
+                    to="/profile"
+                    className="block px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
                     onClick={closeSidebar}
-                    >
-                    <span style={{ marginRight: '8px' }}>📑</span>
-                    {item.label}
-                    </a>
-                </li>
-                ))}
-            </ul>
+                >
+                    Profile
+                </Link>
+                <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-3 py-2 mt-2 rounded bg-red-500 hover:bg-red-600 text-white"
+                >
+                    Logout
+                </button>
+            </div>
         </div>
     );
 
@@ -69,29 +151,36 @@ const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
         <>
             {/* Backdrop for mobile */}
             {isOpen && (
-                <div 
-                className="offcanvas-backdrop fade show d-md-none" 
-                onClick={closeSidebar}
+                <div
+                    className="offcanvas-backdrop fade show d-md-none"
+                    onClick={closeSidebar}
                 />
             )}
-            
-            {/* Sidebar - Desktop version */}
-            <nav id="sidebarMenu" className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar">
-                <div className="position-sticky pt-3">
-                {sidebarContent}
-                </div>
+
+            {/* Desktop sidebar */}
+            <nav
+                id="sidebarMenu"
+                className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar"
+            >
+                <div className="position-sticky pt-3">{sidebarContent}</div>
             </nav>
 
-            {/* Offcanvas - Mobile version */}
-            <div 
-                className={`offcanvas offcanvas-start d-md-none ${isOpen ? 'show' : ''}`} tabIndex="-1" id="offcanvasSidebar">
+            {/* Offcanvas for mobile */}
+            <div
+                className={`offcanvas offcanvas-start d-md-none ${isOpen ? 'show' : ''}`}
+                tabIndex="-1"
+                id="offcanvasSidebar"
+            >
                 <div className="offcanvas-header">
                     <h5 className="offcanvas-title">Menu</h5>
-                    <button type="button" className="btn-close text-reset" onClick={closeSidebar} aria-label="Close"></button>
+                    <button
+                        type="button"
+                        className="btn-close text-reset"
+                        onClick={closeSidebar}
+                        aria-label="Close"
+                    ></button>
                 </div>
-                <div className="offcanvas-body p-0">
-                    {sidebarContent}
-                </div>
+                <div className="offcanvas-body p-0">{sidebarContent}</div>
             </div>
         </>
     );
