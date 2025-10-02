@@ -19,7 +19,6 @@ export function useProgramsHook() {
       enabled: !!id,
     });
 
-  // ✅ CRUD mutations
   const createProgram = useMutation({
     mutationFn: api.createProgram,
     onSuccess: () => qc.invalidateQueries(['programs']),
@@ -77,10 +76,10 @@ export function useProgramsHook() {
       enabled: !!programId,
     });
 
-  const acceptApplication = useMutation({
-    mutationFn: api.acceptApplication,
-    onSuccess: (_d, { programId }) => {
-      qc.invalidateQueries(['programApplications', programId]);
+    const acceptApplication = useMutation({
+        mutationFn: api.acceptApplication,
+        onSuccess: (_d, { programId }) => {
+        qc.invalidateQueries(['programApplications', programId]);
     },
   });
 
