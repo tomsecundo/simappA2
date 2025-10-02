@@ -1,105 +1,86 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const Mentor = require('../domain/MentorDomain');
 const MentorRepo = require('../repositories/MentorRepo');
 const UserRepo = require('../repositories/UserRepo');
 const { UserRole } = require('../models/UserModel');
+const MentorFactory = require('../domain/factories/MentorFactory');
 
 class MentorController {
 
     async create(req, res, next) {
         try {
-            const mentorData = new Mentor(req.body);
-            const saved = await MentorRepo.create({ ...mentorData, role: UserRole.MENTOR });
-            res.status(201).json(saved);
+            const mentorData = { ...req.body, role: UserRole.MENTOR };
+            const saved = await MentorRepo.create(mentorData);
+            const domainMentor = MentorFactory.createMentor(saved.toObject());
+            res.status(201).json(domainMentor);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * @returns All Mentors
-     */
     async getAll(req, res, next) {
         try {
             const mentors = await MentorRepo.findAll();
-            res.json(mentors);
+            const domainMentors = MentorFactory.createMentors(mentors);
+            res.json(domainMentors);
         } catch (error) {
             next(error);
         }
     } 
 
-    /**
-     * @returns self
-     */
     async getProfile(req, res, next) {
         try {
             if (!req.user) return res.status(401).json({ message: 'Not authorized' });
-            if (req.user.role !== 'Mentor') return res.status(403).json({ message: 'Access denied: not a Mentor' });
+            if (req.user.role !== UserRole.MENTOR) {
+                return res.status(403).json({ message: 'Access denied: not a Mentor' });
+            }
 
             const mentor = await MentorRepo.findById(req.user._id);
-            if (!mentor) {
-                return res.status(404).json({ message: 'Mentor not found' });
-            }
-            res.json(mentor);
+            if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
+
+            const domainMentor = MentorFactory.createMentor(mentor.toObject());
+            res.json(domainMentor);
         } catch (error) {
             next(error);
         }
     }
 
-    // Mentor self: update mentor profile (extends user updateProfile)
     async updateProfile(req, res, next) {
         try {
             if (!req.user) return res.status(401).json({ message: 'Not authorized' });
-
             const targetId = req.params.id || req.user._id;
-            
-            // Update base user fields
-            let updated = await UserRepo.updateById(targetId, req.body);
 
-            // If mentor, update mentor-specific fields too
+            let updated = await UserRepo.updateById(targetId, req.body);
             if (updated && updated.role === UserRole.MENTOR) {
                 updated = await MentorRepo.updateById(targetId, req.body);
             }
 
             if (!updated) return res.status(404).json({ message: 'Mentor not found' });
 
-            res.json(updated);
+            const domainMentor = MentorFactory.createMentor(updated.toObject());
+            res.json(domainMentor);
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern?.email) {
-                return res.status(400).json({ message: 'Email already exists' });
-            }
             next(error);
         }
     }
 
-    // Admin update
     async updateMentorByAdmin(req, res, next) {
         try {
-            if (!req.user) return res.status(401).json({ message: 'Not authorized' });
-
             const targetId = req.params.id || req.user._id;
-
-            // Only Admin can update someone else's profile
             if (req.user.role !== UserRole.ADMIN && req.user._id.toString() !== targetId.toString()) {
                 return res.status(403).json({ message: 'Forbidden' });
             }
 
-            // Update base user fields
-            let updated = await MentorRepo.updateById(targetId, req.body);
+            const updated = await MentorRepo.updateById(targetId, req.body);
             if (!updated) return res.status(404).json({ message: 'Mentor not found' });
-            res.json(updated);
+
+            const domainMentor = MentorFactory.createMentor(updated.toObject());
+            res.json(domainMentor);
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern?.email) {
-                return res.status(400).json({ message: 'Email already exists' });
-            }
             next(error);
         }
     }
 
-    /**
-     * @returns Mentor by Id
-     */
     async getById(req, res, next) {
         try {
             if (req.user.role !== UserRole.ADMIN && req.user.role !== UserRole.MENTOR) {
@@ -108,15 +89,14 @@ class MentorController {
 
             const mentor = await MentorRepo.findById(req.params.id);
             if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
-            res.json(mentor);
+
+            const domainMentor = MentorFactory.createMentor(mentor.toObject());
+            res.json(domainMentor);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * @
-     */
     async addProgram(req, res, next) {
         try {
             const { program_id } = req.body;
@@ -125,23 +105,22 @@ class MentorController {
             }
 
             const updatedMentor = await MentorRepo.addProgram(req.params.id, program_id);
-            if (!updatedMentor) {
-                return res.status(404).json({ message: 'Mentor not found' });
-            }
+            if (!updatedMentor) return res.status(404).json({ message: 'Mentor not found' });
 
-            res.json(updatedMentor);
+            const domainMentor = MentorFactory.createMentor(updatedMentor.toObject());
+            res.json(domainMentor);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * @
-     */
     async removeProgram(req, res, next) {
         try {
             const updatedMentor = await MentorRepo.removeProgram(req.params.id, req.body.program_id);
-            res.json(updatedMentor);
+            if (!updatedMentor) return res.status(404).json({ message: 'Mentor not found' });
+
+            const domainMentor = MentorFactory.createMentor(updatedMentor.toObject());
+            res.json(domainMentor);
         } catch (error) {
             next(error);
         }
@@ -157,7 +136,8 @@ class MentorController {
             const updatedMentor = await MentorRepo.addProgram(req.user._id, program_id);
             if (!updatedMentor) return res.status(404).json({ message: 'Mentor not found' });
 
-            res.json(updatedMentor);
+            const domainMentor = MentorFactory.createMentor(updatedMentor.toObject());
+            res.json(domainMentor);
         } catch (error) {
             next(error);
         }
@@ -173,15 +153,13 @@ class MentorController {
             const updatedMentor = await MentorRepo.removeProgram(req.user._id, program_id);
             if (!updatedMentor) return res.status(404).json({ message: 'Mentor not found' });
 
-            res.json(updatedMentor);
+            const domainMentor = MentorFactory.createMentor(updatedMentor.toObject());
+            res.json(domainMentor);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * @ self
-     */
     async changePassword(req, res, next) {
         try {
             const { oldPassword, newPassword } = req.body;
@@ -199,15 +177,16 @@ class MentorController {
             mentor.password = hashed;
             await mentor.save();
 
-            res.json({ message: 'Password updated successfully' });
+            const domainMentor = MentorFactory.createMentor(mentor.toObject());
+            res.json({ 
+                message: 'Password updated successfully',
+                mentor: domainMentor
+            });
         } catch (error) {
             next(error);
         }
     }
-    /**
-     * @access UserRole: Admin
-     * @returns 
-     */
+
     async deleteMentor(req, res, next) {
         try {
             if (req.user.role !== UserRole.ADMIN) {
@@ -225,4 +204,4 @@ class MentorController {
     }
 }
 
-module.exports = new MentorController(); 
+module.exports = new MentorController();

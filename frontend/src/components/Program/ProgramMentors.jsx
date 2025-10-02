@@ -18,19 +18,18 @@ const ProgramMentors = ({ programId, mentors }) => {
   if (user?.role === "Mentor") {
     return (
       <div className="bg-white shadow p-4 rounded">
-        <h3 className="font-bold mb-3">Mentor Enrollment</h3>
         <div className="flex gap-2">
           <button
             onClick={() => enrollAsMentor.mutate(programId)}
-            className="px-3 py-1 bg-blue-500 text-white rounded"
+            className="px-6 py-2 bg-blue-500 text-white rounded"
           >
-            Enroll
+            Apply as Mentor
           </button>
           <button
             onClick={() => leaveProgram.mutate(programId)}
-            className="px-3 py-1 bg-red-500 text-white rounded"
+            className="px-6 py-2 bg-red-500 text-white rounded"
           >
-            Leave
+            Leave Program
           </button>
         </div>
       </div>
