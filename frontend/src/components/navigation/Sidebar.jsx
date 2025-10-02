@@ -62,6 +62,13 @@ const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
                 { label: 'New Report', path: '/reports/new' },
             ],
         },
+        {
+            label: 'Assignments',
+            children: [
+                { label: 'All Assignments', path: '/assignment' },
+                { label: 'New Assignment', path: '/assignment/new' },
+            ],
+        },
     ];
 
     const toggleMenu = (label) => {
