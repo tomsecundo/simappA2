@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 const Application = require("../domain/ApplicationDomain");
 const ApplicationRepo = require('../repositories/ApplicationRepo');
-
 const { ApplicationStatus } = require('../models/ApplicationModel');
 
 class ApplicationController {
@@ -35,6 +34,18 @@ class ApplicationController {
     async getById(req, res, next) {
         try {
             const application = await ApplicationRepo.findById(req.params.id);
+            if (!application) {
+                return res.status(404).json({ message: "Application not found" });
+            }
+            res.json(application);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getByUserId(req, res, next) {
+        try {
+            const application = await ApplicationRepo.findByCreatedBy(req.params.id);
             if (!application) {
                 return res.status(404).json({ message: "Application not found" });
             }

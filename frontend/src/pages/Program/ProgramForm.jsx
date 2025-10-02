@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useProgramApi } from "../../api/programApi";
-import ErrorBanner from "../../components/common/ErrorBanner";
+import { useProgramsHook } from "../../hooks/programHook";
 
 function ProgramForm() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { createProgram, updateProgram, getProgramById } = useProgramApi();
+    const { useProgram, createProgram, updateProgram } = useProgramsHook();
 
     const [form, setForm] = useState({
         title: "",
@@ -14,50 +13,37 @@ function ProgramForm() {
         startDate: "",
         endDate: "",
     });
-    const [errorMessages, setErrorMessages] = useState([]);
+
+    const { data, isLoading } = useProgram(id);
 
     useEffect(() => {
-        if (id) {
-        getProgramById(id)
-            .then((data) => setForm(data))
-            .catch(() => setErrorMessages(["Failed to load program."]));
-        }
-    }, [id, getProgramById]);
+        if (data) setForm(data);
+    }, [data]);
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             if (id) {
-                await updateProgram(id, form);
+                await updateProgram.mutateAsync({ id, data: form });
             } else {
-                await createProgram(form);
+                await createProgram.mutateAsync(form);
             }
             navigate("/programs");
-        } catch (err) {
-            if (err.response?.status === 401) {
-                setErrorMessages(["Unauthorized: please log in again."]);
-            } else if (err.response?.data?.details) {
-                setErrorMessages(err.response.data.details);
-            } else {
-                setErrorMessages(["Failed to save program."]);
-            }
+        } catch {
+            alert("Failed to save program.");
         }
     };
 
+    if (isLoading && id) return <p>Loading program...</p>;
+
     return (
-        <div className="p-4">
-            <h2>{id ? "Edit Program" : "New Program"}</h2>
-
-            <ErrorBanner
-                message={errorMessages.length ? errorMessages.join(", ") : ""}
-                onClose={() => setErrorMessages([])}
-            />
-
-            <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="p-6">
+            <h2 className="text-xl font-bold mb-4">
+                {id ? "Edit Program" : "New Program"}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <input
                     type="text"
                     name="title"
@@ -65,14 +51,14 @@ function ProgramForm() {
                     value={form.title}
                     onChange={handleChange}
                     required
-                    className="form-control"
+                    className="w-full border p-2 rounded"
                 />
                 <textarea
                     name="description"
                     placeholder="Description"
                     value={form.description}
                     onChange={handleChange}
-                    className="form-control"
+                    className="w-full border p-2 rounded"
                 />
                 <input
                     type="date"
@@ -80,7 +66,7 @@ function ProgramForm() {
                     value={form.startDate?.slice(0, 10) || ""}
                     onChange={handleChange}
                     required
-                    className="form-control"
+                    className="w-full border p-2 rounded"
                 />
                 <input
                     type="date"
@@ -88,9 +74,12 @@ function ProgramForm() {
                     value={form.endDate?.slice(0, 10) || ""}
                     onChange={handleChange}
                     required
-                    className="form-control"
+                    className="w-full border p-2 rounded"
                 />
-                <button type="submit" className="btn btn-success">
+                <button
+                    type="submit"
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded"
+                >
                     {id ? "Update" : "Create"}
                 </button>
             </form>

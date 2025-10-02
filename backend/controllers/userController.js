@@ -1,136 +1,129 @@
-const mongoose = require('mongoose');
-const { User, Mentor } = require('../models/UserModel');
+const bcrypt = require('bcrypt');
+const User = require('../domain/UserDomain');
+const UserRepo = require('../repositories/UserRepo');
+const MentorRepo = require('../repositories/MentorRepo');
+const { UserRole } = require('../models/UserModel');
 
-const getUsers = async (req,res) => {
-  try {
-    if (req.query.role === 'Mentor') {
-      const mentors = await Mentor.find({}).select('-password');
-      if (mentors.length) return res.json(mentors);
-      
-      const userMentors = await User.find({role: 'Mentor'}).select('-password');
-      return res.json(userMentors);
-  }
-
-  const users = await User.find({role:'Mentor'}).select('-password');
-  return res.json(users);
-  } catch (err) {
-    return res.status(500).json({message: 'Server error'});
-  }
-};
-
-const getUserById = async (req,res) => {
-  try {
-    const {id} = req.params;
-
-    if (req.user.role !== 'Admin' && req.user._id.toString() !==id) {
-      return res.status(403).json({message: 'Admin/Mentor Only Access'});
+class UserController {   
+    async getAllUsers(req, res, next) {
+        try {
+            const users = await UserRepo.findAll();
+            res.json(users);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    let user  = await Mentor.findById(id).select('-password');
-    if (!user) user = await User.findById(id).select('-password');
+    async getProfile(req, res, next) {
+        try {
+            if (!req.user) return res.status(401).json({ message: 'Not authorized' });
 
-    if (!user) return res.status(404).json({message:'User not Found'});
-    res.json(user);
-  } catch (e) {
-      return res.status(500).json({message: 'Server error'});
-    }
-  };
+            const user = await UserRepo.findById(req.user._id);
+            if (!user) return res.status(404).json({ message: 'User not found' });
 
-
-const getProfile = async (req, res) => {
-  try {
-    let user; 
-
-    if (req.user.role === "Mentor") {
-      user = await Mentor.findById(req.user._id).select('-password');
-    } else {
-      user = await User.findById(req.user._id).select('-password');
-    }
-
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+            if (user.role === UserRole.MENTOR) {
+                const mentor = await MentorRepo.findById(user._id);
+                return res.json({
+                    ...user.toObject(),
+                    expertise: mentor?.expertise || null,
+                    programs: mentor?.programs || [],
+                });
+            }
+            res.json(user);
+        } catch (err) {
+            next(err);
+        }
     }
 
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+    async getUserById(req, res, next) {
+        try {
+            const user = await UserRepo.findById(req.params.id);
+            if (!user) return res.status(404).json({message:'User not Found'});
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
 
-const updateUserProfile = async (req, res) => {
-    try {
-      
-      const targetId = 
-        req.user.role === 'Admin' && req.body.id ? req.body.id : req.user._id;
-      
-      let user = await Mentor.findById(targetId);
-      if (user) {
-
-        const { firstName, lastName, email, number, expertise, affiliation, address, password } = req.body;
-        
-        user.firstName = firstName || user.firstName;
-        user.lastName = lastName || user.lastName;
-        user.email = email || user.email;
-        user.number = number || user.number;
-        user.expertise = expertise || user.expertise;
-        user.affiliation = affiliation || user.affiliation;
-        user.address = address || user.address;
-        if (password) user.password = password;
-
-      } else {
-        user = await User.findById(targetId);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-      
-        const { name, email, role, university, address } = req.body;
-
-        user.name = name || user.name;
-        user.email = email || user.email;
-        user.role = role || user.role;
-        user.university = university || user.university;
-        user.address = address || user.address;
-      }
-        const updatedUser = await user.save();
-
-        res.json({ 
-          id: updatedUser.id, 
-          role: updatedUser.role, 
-          ...updatedUser.toObject(),
-        });
-
-      } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-      }
+    async updateUserProfile(req, res, next) {
+        try {
+            const updatedUser = await UserRepo.updateById(req.user._id, req.body);
+            res.json(updatedUser);
+        } catch (error) {
+            if (error.code === 11000 && error.keyPattern?.email) {
+                return res.status(400).json({ 
+                    message: 'Email already exists. Please use a different email address.'
+                });
+            }
+            next(error);
+        }
     };
 
-  const deleteUser = async (req,res) => {
-    try {
-        if(!req.user) return res.status(401).json({message: 'Unauthorized'});
-        if (req.user.role !== 'Admin') {
-            return res.status(403).json({message: 'Admin access only'});
-        }
+    async updateUserByAdmin(req, res, next) {
+        try {
+            if (req.user.role !== UserRole.ADMIN) {
+                return res.status(403).json({ message: 'Admin access only' });
+            }
 
-        const {id} = req.params;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({message: 'Invalid id'});
-        }
+            const { id } = req.params;
+            const updates = req.body;
 
-        const mentor = await Mentor.findById(id);
-        if (mentor) {
-            await Mentor.deleteOne({_id: id});
-            return res.status(200).json({_id: id, deleted: true, source: 'Mentor'});
-        }
+            // Update base user fields
+            let updatedUser = await UserRepo.updateById(id, updates);
 
-        const user = await User.findById(id);
-        if (!user) return res.status(404).json({message: 'User not found'});
-        if (user.role !== 'Mentor') {
-            return res.status(400).json({message: 'Not a mentor account'});
-        }
+            // If mentor, also update mentor-specific fields
+            if (updatedUser && updatedUser.role === UserRole.MENTOR) {
+                updatedUser = await MentorRepo.updateById(id, updates);
+            }
 
-        await User.deleteOne({_id: id});
-        return res.status(200).json({_id: id, deleted: true, source: 'User'});
-    } catch (err) {
-        return res.status(500).json({message: 'Server Error'});
+            if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+
+            res.json(updatedUser);
+        } catch (error) {
+            if (error.code === 11000 && error.keyPattern?.email) {
+                return res.status(400).json({ message: 'Email already exists. Please use a different email address.' });
+            }
+            next(error);
+        }
     }
-};
 
-module.exports = { updateUserProfile, getProfile, getUsers, getUserById, deleteUser, };
+    async changePassword(req, res, next) {
+        try {
+            const { oldPassword, newPassword } = req.body;
+            if (!oldPassword || !newPassword) {
+                return res.status(400).json({ message: 'Both old and new password are required' });
+            }
+
+            const user = await UserRepo.findByIdWithPassword(req.user._id);
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            const isMatch = await bcrypt.compare(oldPassword, user.password);
+            if (!isMatch) return res.status(400).json({ message: 'Old password is incorrect' });
+
+            const hashed = await bcrypt.hash(newPassword, 10);
+            user.password = hashed;
+            await user.save();
+
+            res.json({ message: 'Password updated successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteUser(req, res, next) {
+        try {
+            if (req.user.role !== UserRole.ADMIN) {
+                return res.status(403).json({ message: 'Admin access only' });
+            }
+
+            const deleted = await UserRepo.deleteById(req.params.id);
+            if (!deleted) return res.status(404).json({ message: 'User not found' });
+
+            res.json({ id: req.params.id, deleted: true });
+        } catch (error) {
+            next(error);
+        }
+    };
+}
+
+module.exports = new UserController();

@@ -1,59 +1,62 @@
-const { Report, phaseStatus } = require('../models/Report');
+const { Progress } = require('../models/Progress');
 const crypto = require('crypto');
 
 // Generate a unique  ID
-const generateReportId = async () => {
+const generateProgressId = async () => {
     const timestamp = new Date().getTime().toString();
     const randomStr = crypto.randomBytes(4).toString('hex');
-    const reportId = `app-${timestamp.substring(timestamp.length - 6)}-${randomStr}`;
+    const progressId = `app-${timestamp.substring(timestamp.length - 6)}-${randomStr}`;
     
     // Make sure the ID is unique
-    const existingReport = await Report.findOne({ reportId });
-    if (existingReport) {
-        return generateReportId();
+    const existingProgress = await Progress.findOne({ progressId });
+    if (existingProgress) {
+        return generateProgressId();
     }
     
-    return reportId;
+    return progressId;
 };
 
 // Create a new report
-const createReport = async (req, res) => {
+const createProgress = async (req, res) => {
     try {
-        const { mentorEmail,
-                submissionDate,
-                phase,
+        
+        const { applicationId,
+                mentorEmail,
+                phase1,
+                phase2,
+                phase3,
+                phase4,
                 startupName,
-                programApplied,
-                description,
-                remarks,
                 timestamps } = req.body;
         
         // Generate a unique report ID
-        const reportId = await generateReportId();
-        const report = new Report({ reportId, mentorEmail, submissionDate, phase, programApplied, startupName, description, remarks, timestamps });
-        console.log(report);
-        const submittedReport = await report.save();
-        res.status(201).json(submittedReport);
+        const progressId = await generateProgressId();
+        
+        const progress = new Progress({ progressId, applicationId, mentorEmail, phase1, phase2, phase3, phase4, startupName, timestamps });
+        console.log(progress);
+        const progressStartUp = await progress.save();
+        res.status(201).json(progressStartUp);
     } catch (error) {
-        res.status(500).json({ message: "Failed to submit a report", error: error.message });
+        res.status(500).json({ message: error.message + ": Failed to create", error: error.message });
     }
 };
 
-// Get all report (Read)
-const getAllReports = async (req, res) => {
+// Get progress (Read)
+const getAllProgress = async (req, res) => {
     try {
-        const reports = await Report.find().sort({ submissionDate: -1 });
-        res.status(200).json(reports);
+        const progress = await Progress.find().sort({ applicationId: -1 });
+
+        res.status(200).json(progress);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch reports', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch progress chart', error: error.message });
     }
 };
 
 // Get a report by reportID
-const getReportByPhase = async (req, res) => {
+const getProgressById = async (req, res) => {
     try {
-        const { id, phase } = req.params;
-        const report = await Report.findOne({ reportId: id, phase: phase });
+        const { id} = req.params;
+        const progress = await Progress.findOne({ reportId: id});
         
         if (!report) {
             return res.status(404).json({ message: 'Report not found' });
@@ -80,31 +83,32 @@ const getReportById = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch report', error: error.message });
     }
 };
-// Get reports by report ID
-const getReportByApplicationId = async (req, res) => {
+
+const getProgressByApplicationId = async (req, res) => {
     try {
-        const { id } = req.params;
-        const report = await Report.findById(id);
-        
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
+        const { id } = req.params; // this is the applicationId
+        // Find all progress documents with this applicationId
+        const progress = await Progress.find({ applicationId: id });
+
+        if (!progress || progress.length === 0) {
+            return res.status(404).json({ message: 'No progress found for this application' });
         }
-        
-        res.status(200).json(report);
+
+        res.status(200).json(progress);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch progress', error: error.message });
     }
 };
 
 // Update report remarks
-const updateReport = async (req, res) => {
+const updateProgress = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { phase1, phase2, phase3, phase4 } = req.body;
         
         // Validate status
         const validStatuses = Object.values(phaseStatus);
-        if (!validStatuses.includes(status)) {
+        if (!validStatuses.includes(phase1)) {
             return res.status(400).json({ message: 'Invalid phase status value' });
         }
         
@@ -149,10 +153,9 @@ const deleteReport = async (req, res) => {
 };
 
 module.exports = { 
-    createReport, 
-    getAllReports,
-    getReportById,
-    getReportByApplicationId,
-    updateReport,
+    createProgress, 
+    getAllProgress,
+    getProgressByApplicationId,
+    updateProgress,
     deleteReport
 };

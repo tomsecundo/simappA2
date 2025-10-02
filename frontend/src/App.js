@@ -15,7 +15,7 @@ import ApplicationEditForm from './pages/Application/ApplicationEditForm';
 import ApplicationForm from './pages/Application/ApplicationForm';
 
 // Mentorship feature
-import ProtectedMentors from './pages/Mentorship/Mentor';
+import Mentors from './pages/Mentorship/Mentor';
 import ProtectedUpdateMentor from './pages/Mentorship/UpdateMentor';
 
 // Program feature
@@ -24,6 +24,9 @@ import ProgramForm from './pages/Program/ProgramForm';
 
 // Report feature
 import Reports from './pages/Reports/Reports';
+import ReportForm from './pages/Reports/ReportForm';
+import Progress from './pages/Reports/Progress';
+import ProgressForm from './pages/Reports/ProgressForm';
 
 // Session feature
 import SessionList from './pages/Session/SessionList';
@@ -34,6 +37,8 @@ import AvailabilityForm from './pages/Availability/Availability';
 
 // Profile feature
 import Profile from './pages/Profile/Profile';
+// import UsersList from './components/User/UsersList'; // Admin only
+// import UserDetail from './components/User/UserDetail'; // Admin only
 
 // Guards
 import RequireRole from './components/RequireRole';
@@ -84,14 +89,7 @@ function App() {
                     />
 
                     {/* Mentorship */}
-                    <Route 
-                        path="/mentor" 
-                        element={
-                        <RequireRole allowedRoles={[UserRole.ADMIN]}>
-                            <ProtectedMentors />
-                        </RequireRole>
-                        } 
-                    />
+                    <Route path="/mentor" element={ <Mentors />} />
                     <Route 
                         path="/mentor/update/:id" 
                         element={
@@ -103,8 +101,13 @@ function App() {
 
                     {/* Reports */}
                     <Route path="/reports" element={<Reports />} />
+                    <Route path="/reports/new" element={<ReportForm />} />
+
+                    <Route path="/progress" element={<Progress />} />
+                    <Route path="/progress/new" element={<ProgressForm />} />
 
                     <Route path="/profile" element={<Profile />} />
+
                     <Route path="/unauthorized" element={<Unauthorized />} />
                     
                     {/* Sessions */}

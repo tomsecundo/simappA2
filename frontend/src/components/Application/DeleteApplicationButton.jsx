@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApplicationsHook } from '../../hooks/useApplicationsHook';
+import { useApplicationsHook } from '../../hooks/applicationHook';
 
-const DeleteApplicationButton = ({ applicationId, className, onDelete }) => {
+const DeleteApplicationButton = ({ applicationId, className }) => {
     const navigate = useNavigate();
     const { deleteApplication } = useApplicationsHook();
     const [error, setError] = useState(null);
@@ -20,17 +20,20 @@ const DeleteApplicationButton = ({ applicationId, className, onDelete }) => {
     };
 
     return (
-        <>
-            <button 
-                type='button'
-                onClick={handleDelete} 
+        <div className="inline-block">
+            <button
+                type="button"
+                onClick={handleDelete}
                 disabled={deleteApplication.isLoading}
-                className={className || 'btn btn-sm btn-danger'}
+                className={
+                    className ||
+                    'px-3 py-1 bg-red-500 hover:bg-red-700 text-white rounded text-xs'
+                }
             >
                 {deleteApplication.isLoading ? 'Removing...' : 'Remove'}
             </button>
-            { error ? <div className='text-danger small mt-1'>{{error}}</div> : null }
-        </>
+            {error && <div className="text-red-500 text-xs mt-1">{error}</div>}
+        </div>
     );
 };
 

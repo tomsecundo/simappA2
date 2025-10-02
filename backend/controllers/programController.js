@@ -1,9 +1,14 @@
 const Program = require("../domain/ProgramDomain");
 const ProgramRepo = require("../repositories/ProgramRepo");
+const { UserRole } = require("../models/UserModel");
 
 class ProgramController {
     static async create(req, res, next) {
         try {
+            if (req.user.role !== UserRole.ADMIN) {
+                return res.status(403).json({ message: "Admin access only" });
+            }
+
             const program = new Program(req.body);
             const saved = await ProgramRepo.create(program);
             res.status(201).json(saved);
@@ -35,6 +40,10 @@ class ProgramController {
 
     static async update(req, res, next) {
         try {
+            if (req.user.role !== UserRole.ADMIN) {
+                return res.status(403).json({ message: "Admin access only" });
+            }
+
             const updated = await ProgramRepo.update(req.params.id, req.body);
             if (!updated) {
                 return res.status(404).json({ message: "Program not found" });
@@ -47,6 +56,10 @@ class ProgramController {
     
     static async delete(req, res, next) {
         try {
+            if (req.user.role !== UserRole.ADMIN) {
+                return res.status(403).json({ message: "Admin access only" });
+            }
+            
             const deleted = await ProgramRepo.delete(req.params.id);
             if (!deleted) {
                 return res.status(404).json({ message: "Program not found" });

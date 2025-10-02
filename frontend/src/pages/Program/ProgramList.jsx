@@ -1,41 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
-import { useProgramApi } from "../../api/programApi";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useProgramsHook } from "../../hooks/programHook";
 import ProgramTable from "../../components/Program/ProgramTable";
-import ErrorBanner from "../../components/common/ErrorBanner";
 
 function ProgramList() {
-    const { getPrograms } = useProgramApi();
-    const [programs, setPrograms] = useState([]);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true);
+    const { programsQuery } = useProgramsHook();
 
-    useEffect(() => {
-        async function load() {
-            try {
-                const data = await getPrograms();
-                setPrograms(data);
-            } catch (err) {
-                if (err.response?.status === 401) {
-                    setError("Unauthorized: please log in again.");
-                } else {
-                    setError("Failed to load programs.");
-                }
-            } finally {
-                setLoading(false);
-            }
-        }
-        load();
-    }, [getPrograms]);
-    
-    if (loading) return <p>Loading programs...</p>;
+    if (programsQuery.isLoading) return <p className="p-4">Loading programs...</p>;
+    if (programsQuery.isError) return <p className="p-4 text-red-500">Failed to load programs.</p>;
 
     return (
-        <div className="p-4">
-            <h2 className="mb-3">Programs</h2>
-            <ErrorBanner message={error} onClose={() => setError("")} />
-            <Link to="/programs/new" className="btn btn-primary">New Program</Link>
-            <ProgramTable programs={programs} />
+        <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Programs</h2>
+                <Link
+                    to="/programs/new"
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                >
+                    New Program
+                </Link>
+            </div>
+            <ProgramTable programs={programsQuery.data || []} />
         </div>
     );
 }

@@ -1,15 +1,18 @@
-
 const express = require('express');
-const { updateUserProfile, getProfile, getUsers, getUserById, deleteUser } = require('../controllers/userController');
-const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.get('/profile', protect, getProfile);
-router.put('/profile', protect, updateUserProfile);
+const UserController = require('../controllers/userController');
+const { protect, hasRole } = require('../middleware/authMiddleware');
+const { UserRole } = require('../models/UserModel');
 
-router.get('/:id', protect, getUserById);
-router.get('/', protect, getUsers);
+router.get('/profile', protect, UserController.getProfile);
+router.put('/profile', protect, UserController.updateUserProfile);
+router.put('/change-password', protect, UserController.changePassword);
 
-router.delete('/:id', protect, deleteUser)
+// Admin-only
+router.get('/', protect, hasRole(UserRole.ADMIN), UserController.getAllUsers);
+router.get('/:id', protect, hasRole(UserRole.ADMIN), UserController.getUserById);
+router.put('/:id', protect, hasRole(UserRole.ADMIN), UserController.updateUserByAdmin);
+router.delete('/:id', protect, hasRole(UserRole.ADMIN), UserController.deleteUser);
 
 module.exports = router;

@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation} from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../services/axiosConfig';
-import RequireAdmin from '../../components/RequireAdmin';
+// import RequireAdmin from '../../components/RequireAdmin';
 
 const Mentors = () => {
   const { user } = useAuth();
@@ -222,10 +222,4 @@ const Mentors = () => {
 };
 
 // Export with authentication protection
-export default function ProtectedMentors() {
-  return (
-    <RequireAdmin>
-      <Mentors />
-    </RequireAdmin>
-  );
-}
+export default Mentors;
