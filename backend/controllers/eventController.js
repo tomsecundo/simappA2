@@ -1,4 +1,5 @@
 const { Event, EventType, EventCoverage } = require('../models/eventModel');
+const { EventRegistration  } = require('../models/eventRegistrationModel');
 
 // Create a new event
 const createEvent = async (req, res) => {
@@ -164,6 +165,90 @@ const deleteEvent = async (req, res) => {
     }
 };
 
+const registerForEvent = async (req, res) => {
+    try {
+        const {eventId} = req.params;
+        const { applicationId } = req.body || {};
+
+
+        const event = await Event.findById(eventId);
+        if(!event) return res.status(404).json({ message: 'Event not found' });
+
+        const reg = await EventRegistration.create({
+            event: eventId,
+            user: req.user._id,
+            application: applicationId
+        });
+
+        res.status(201).json(reg);
+    } catch (err) {
+        if (err.code === 11000) {
+            return res.status(409).json({ message: 'Already registered for this event.'});
+        }
+        res.status(500).json({  message: 'Failed to register', error: err.message });
+    }
+};
+    //Cancel registration
+    const unregisterFromEvent = async (req,res) => {
+        try {
+            const { eventId} = req.params;
+            const result = await EventRegistration.deleteOne({ event: eventId, user: req.user._id});
+            if (!result.deletedCount) return res.status(404).json({ message: 'Not registered'});
+            res.json({ message: 'Registration cancelled'});
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to cancel registration', error: err.message});
+        }
+    };
+
+    // List of event attendees
+    const listRegistrations = async (req, res) => {
+        try {
+            const { eventId } = req.params;
+
+            const regs = await EventRegistration
+                .find({ event: eventId, status: 'Registered'})
+                .populate('user', 'name email')
+                .populate('application', 'applicationName')
+                .sort({ createdAt: -1 });
+
+            if (regs.length === 0) {
+                return res.status(200).json({
+                    message: 'Not registered to any event/s',
+                    registrations: []
+                });
+            }
+            res.json(regs);
+        } catch (err) {
+            res.status(500).json({  message: 'Failed to load registrations', error: err.message});
+        }
+    };
+    
+    //User registration
+    const listMyRegistrations = async (req, res) => {
+        try {
+            const regs = await EventRegistration
+            .find({ user: req.user._id, status: 'Registered'})
+            .populate('event', 'eventName eventDate eventVenue eventType coverage')
+            .populate('application', 'applicationName')
+            .sort({ createdAt: -1 })
+            .lean();
+
+            if (regs.length === 0) {
+                return res.status(200).json({
+                    message: 'Not registered to any event/s',
+                    registrations: []
+                });
+            }
+
+            res.json(regs.map(r => ({
+                event: r.event,
+                application: r.application ?? null
+        })));
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to load my registrations', error: err.message });
+        }
+    };
+
 module.exports = { 
     createEvent, 
     getAllEvents,
@@ -171,5 +256,9 @@ module.exports = {
     getEventByType,
     getEventByCoverage,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    registerForEvent,
+    unregisterFromEvent,
+    listRegistrations,
+    listMyRegistrations,
 };
