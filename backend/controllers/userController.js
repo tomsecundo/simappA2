@@ -209,5 +209,6 @@ const listStartups = async (req, res) => {
         res.status(500).json({message: 'Failed to load startups', error: err.message});
     }
 };
+
 const ctrl = new UserController();
 module.exports = {UserController: ctrl, listStartups};
