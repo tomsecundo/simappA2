@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useProgramsHook } from "../../hooks/programHook";
 import { useMentorsHook } from "../../hooks/mentorHook";
 import { useState } from "react";
+import { UserRole } from "../../constants/UserRole";
 
 const ProgramDetail = () => {
     const { id } = useParams();
@@ -28,31 +29,38 @@ const ProgramDetail = () => {
         acceptApplication.mutate({ applicationId: appId, programId: id, status });
     };
 
+    const normalize = Array.isArray(applications) ? applications : [];
     const filteredApplications =
         statusFilter === "All"
-        ? applications
-        : applications?.filter((app) => app.status === statusFilter);
+        ? normalize
+        : normalize?.filter((app) => app.status === statusFilter);
 
+    
+    // Check is mentor is currently enrolled in program
+    // const isEnrolled = program?.mentors?.some((m) => m._id === user?._id) ?? false;
+    const isEnrolled = true;
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold">{program?.title}</h1>
             <p className="mb-4">{program?.description}</p>
-
-            {/* Mentor: self enroll/leave */}
-            {user?.role === "Mentor" && (
+            {user?.role === UserRole.MENTOR && (
                 <div className="flex gap-2 mb-6">
-                <button
-                    onClick={() => enrollAsMentor.mutate(id)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded"
-                >
-                    Enroll
-                </button>
-                <button
-                    onClick={() => leaveProgram.mutate(id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded"
-                >
-                    Leave
-                </button>
+                    {!isEnrolled && (
+                        <button
+                            onClick={() => enrollAsMentor.mutate(id)}
+                            className="px-3 py-1 bg-blue-500 text-white rounded"
+                        >
+                            Apply as Mentor
+                        </button>
+                    )}
+                    {isEnrolled && (
+                        <button
+                            onClick={() => leaveProgram.mutate(id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded"
+                        >
+                            Leave
+                        </button>
+                    )}
                 </div>
             )}
 

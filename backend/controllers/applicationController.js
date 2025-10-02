@@ -69,20 +69,23 @@ class ApplicationController {
 
             let applications;
 
-            if (req.user.role === UserRole.ADMIN) {
+            if (req.user.role === UserRole.ADMIN || req.user.role === UserRole.MENTOR) {
                 // Admin sees all
                 applications = await ApplicationRepo.findByProgramId(programId);
-            } else if (req.user.role === UserRole.MENTOR) {
-                // Mentor must be assigned to program
-                const isAssigned = program.mentors.some(
-                    (m) => m.toString() === req.user._id.toString()
-                );
-                if (!isAssigned) {
-                    return res.status(403).json({ message: "Access denied: not assigned to this program" });
-                }
+
+            } 
+            // else if (req.user.role === UserRole.MENTOR) {
+            //     // Mentor must be assigned to program
+            //     const isAssigned = program.mentors.some(
+            //         (m) => m.toString() === req.user._id.toString()
+            //     );
+            //     if (!isAssigned) {
+            //         return res.status(403).json({ message: "Access denied: not assigned to this program" });
+            //     }
                     
-                applications = await ApplicationRepo.findByProgramId(programId);
-            } else if (req.user.role === UserRole.STARTUP) {
+            //     applications = await ApplicationRepo.findByProgramId(programId);
+            // } 
+            else if (req.user.role === UserRole.STARTUP) {
                 // Startup sees only their applications
                 applications = await ApplicationRepo.findByProgramId(programId);
                 applications = applications.filter(
