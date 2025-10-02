@@ -28,6 +28,13 @@ import ReportForm from './pages/Reports/ReportForm';
 import Progress from './pages/Reports/Progress';
 import ProgressForm from './pages/Reports/ProgressForm';
 
+// Session feature
+import SessionList from './pages/Session/SessionList';
+import SessionForm from './pages/Session/SessionForm';
+
+//Availability feature
+import AvailabilityForm from './pages/Availability/Availability';
+
 // Profile feature
 import Profile from './pages/Profile/Profile';
 // import UsersList from './components/User/UsersList'; // Admin only
@@ -38,6 +45,7 @@ import RequireRole from './components/RequireRole';
 
 // constants
 import { UserRole } from './constants/UserRole';
+import AvailabilityList from './pages/Availability/AvailabilityList';
 
 function App() {
     return (
@@ -101,6 +109,41 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
 
                     <Route path="/unauthorized" element={<Unauthorized />} />
+                    
+                    {/* Sessions */}
+                    <Route path="/sessions" element={<SessionList />} />
+                    <Route 
+                        path="/sessions/new" 
+                        element={
+                            <SessionForm />
+                        }
+                    />
+                    <Route 
+                        path="/sessions/:id/edit" 
+                        element={
+                                <SessionForm />
+                        }
+                    />
+
+
+                    {/* Availability */}
+                    <Route path="/availabilitylist" element={<AvailabilityList />} />
+                    <Route 
+                        path="/availabilitylist/new" 
+                        element={
+                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
+                            <AvailabilityForm />
+                            </RequireRole>
+                        }
+                    />
+                    <Route 
+                        path="/availabilitylist/:id/edit" 
+                        element={
+                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
+                                <AvailabilityForm />
+                            </RequireRole>
+                        }
+                    />
                 </Routes>
             </Layout>
         </Router>
