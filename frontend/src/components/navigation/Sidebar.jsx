@@ -80,7 +80,6 @@ const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
             label: 'Events',
             children: [
                 { label: 'Events List', path: '/events' },
-                { label: 'Event Registration', path: '/eventRegistration' },
             ],
         },
     ];
