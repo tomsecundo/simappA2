@@ -12,6 +12,7 @@ router.post('/', protect, validateApplication, ApplicationController.create);
 // Protected routes for managing applications
 router.get('/', protect, ApplicationController.getAll);
 router.get('/:id', protect, ApplicationController.getById);
+router.get('/user/:id', ApplicationController.getByUserId);
 router.put('/:id', protect, ApplicationController.update);
 router.patch('/:id/status', protect, ApplicationController.updateApplicationStatus);
 router.delete('/:id', protect, ApplicationController.delete);

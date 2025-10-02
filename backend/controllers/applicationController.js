@@ -43,6 +43,18 @@ class ApplicationController {
         }
     }
 
+    async getByUserId(req, res, next) {
+        try {
+            const application = await ApplicationRepo.findByCreatedBy(req.params.id);
+            if (!application) {
+                return res.status(404).json({ message: "Application not found" });
+            }
+            res.json(application);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async update(req, res, next) {
         try {
             const {id} = req.params;
