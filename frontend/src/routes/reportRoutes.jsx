@@ -12,9 +12,7 @@ const reportRoutes = [
     key="report-new"
     path="/reports/new"
     element={
-      <RequireRole>
         <ReportForm />
-      </RequireRole>
     }
   />,
   <Route key="progress" path="/progress" element={<Progress />} />,
@@ -22,9 +20,7 @@ const reportRoutes = [
     key="progress-new"
     path="/progress/new"
     element={
-      <RequireRole>
         <ProgressForm />
-      </RequireRole>
     }
   />,
 ];

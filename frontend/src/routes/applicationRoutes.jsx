@@ -15,9 +15,7 @@ const applicationRoutes = [
     key="applications-apply"
     path="/applications/apply"
     element={
-      <RequireRole>
         <ApplicationForm />
-      </RequireRole>
     }
   />,
 ];

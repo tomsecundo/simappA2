@@ -12,27 +12,21 @@ const programRoutes = [
     key="programs-new"
     path="/programs/new"
     element={
-      <RequireRole>
         <ProgramForm />
-      </RequireRole>
     }
   />,
   <Route
     key="programs-view"
     path="/programs/:id"
     element={
-      <RequireRole>
         <ProgramDetail />
-      </RequireRole>
     }
   />,
   <Route
     key="programs-edit"
     path="/programs/:id/edit"
     element={
-      <RequireRole>
         <ProgramForm />
-      </RequireRole>
     }
   />,
 ];

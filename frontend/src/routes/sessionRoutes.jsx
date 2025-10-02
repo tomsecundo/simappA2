@@ -10,9 +10,7 @@ const sessionRoutes = [
     key="session-new"
     path="/sessions/new"
     element={
-      <RequireRole>
         <SessionForm />
-      </RequireRole>
     }
   />,
 ];

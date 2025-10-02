@@ -45,18 +45,26 @@ export const AuthProvider = ({ children }) => {
 
     // Update user state (e.g., after profile edit)
     const updateUser = (newUserData) => {
-        setUser(newUserData);
-        localStorage.setItem('user', JSON.stringify(newUserData));
+        const safeUser = {...newUserData, role: newUserData?.role || null };
+        setUser(safeUser);
+        localStorage.setItem('user', JSON.stringify(safeUser));
     };
 
     // Role check helper functions
-    const hasRole = (requiredRole) => user && user.role === requiredRole;
-    const hasAnyRole = (requiredRoles) => user && requiredRoles.includes(user.role);
+    const hasRole = (requiredRole) => {
+        return user?.role === requiredRole;
+    };
+    
+    const hasAnyRole = (requiredRoles = []) => {
+        if (!user || !Array.isArray(requiredRoles)) {
+            return false;
+        }
+        return requiredRoles.includes(user.role);
+    }
+    
     const isAdmin = () => hasRole(UserRole.ADMIN);
     const isMentor = () => hasRole(UserRole.MENTOR);
     const isStartup = () => hasRole(UserRole.STARTUP);
-
-    // Check if user has any of the required roles
 
     // Check if user has all of the required roles
     // const hasAllRoles = (requiredRoles) => user && requiredRoles.every(role => user.role === role);

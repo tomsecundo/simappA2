@@ -10,9 +10,7 @@ const mentorRoutes = [
     key="mentor-update"
     path="/mentor/update/:id"
     element={
-      <RequireRole>
         <UpdateMentor />
-      </RequireRole>
     }
   />,
 ];
