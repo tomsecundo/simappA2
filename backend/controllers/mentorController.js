@@ -47,8 +47,34 @@ class MentorController {
         }
     }
 
-    // Admin or mentor self: update mentor profile (extends user updateProfile)
+    // Mentor self: update mentor profile (extends user updateProfile)
     async updateProfile(req, res, next) {
+        try {
+            if (!req.user) return res.status(401).json({ message: 'Not authorized' });
+
+            const targetId = req.params.id || req.user._id;
+            
+            // Update base user fields
+            let updated = await UserRepo.updateById(targetId, req.body);
+
+            // If mentor, update mentor-specific fields too
+            if (updated && updated.role === UserRole.MENTOR) {
+                updated = await MentorRepo.updateById(targetId, req.body);
+            }
+
+            if (!updated) return res.status(404).json({ message: 'Mentor not found' });
+
+            res.json(updated);
+        } catch (error) {
+            if (error.code === 11000 && error.keyPattern?.email) {
+                return res.status(400).json({ message: 'Email already exists' });
+            }
+            next(error);
+        }
+    }
+
+    // Admin update
+    async updateMentorByAdmin(req, res, next) {
         try {
             if (!req.user) return res.status(401).json({ message: 'Not authorized' });
 
@@ -60,15 +86,8 @@ class MentorController {
             }
 
             // Update base user fields
-            let updated = await UserRepo.updateById(targetId, req.body);
-
-            // If mentor, update mentor-specific fields too
-            if (updated && updated.role === UserRole.MENTOR) {
-                updated = await MentorRepo.updateById(targetId, req.body);
-            }
-
+            let updated = await MentorRepo.updateById(targetId, req.body);
             if (!updated) return res.status(404).json({ message: 'Mentor not found' });
-
             res.json(updated);
         } catch (error) {
             if (error.code === 11000 && error.keyPattern?.email) {

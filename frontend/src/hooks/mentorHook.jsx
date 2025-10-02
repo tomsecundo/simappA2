@@ -1,64 +1,34 @@
+// hooks/mentorHook.js
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMentorApi } from '../api/mentorApi';
 
 export function useMentorsHook() {
-    const api = useMentorApi();
-    const qc = useQueryClient();
+  const api = useMentorApi();
+  const qc = useQueryClient();
 
-    const mentorsQuery = useQuery({
-        queryKey: ['mentors'],
-        queryFn: api.getMentors,
-    });
+  const mentorsQuery = useQuery({ queryKey: ['mentors'], queryFn: api.getAll });
 
-    const useMentor = (id) =>
-        useQuery({
-            queryKey: ['mentor', id],
-            queryFn: () => api.getMentorById(id),
-            enabled: !!id,
-        });
+  const updateMentor = useMutation({
+    mutationFn: ({ id, data }) => api.updateByAdmin(id, data),
+    onSuccess: (_data, { id }) => {
+      qc.invalidateQueries(['mentors']);
+      qc.invalidateQueries(['mentor', id]);
+    },
+  });
 
-    // Admin update mentor
-    const updateMentor = useMutation({
-        mutationFn: ({ id, data }) => api.updateMentor(id, data),
-        onSuccess: (_d, { id }) => {
-            qc.invalidateQueries(['mentors']);
-            qc.invalidateQueries(['mentor', id]);
-        },
-    });
+  const deleteMentor = useMutation({
+    mutationFn: api.deleteMentor,
+    onSuccess: () => qc.invalidateQueries(['mentors']),
+  });
 
-    // Mentor self-update
-    const updateOwnProfile = useMutation({
-        mutationFn: api.updateOwnProfile,
-        onSuccess: () => qc.invalidateQueries(['mentor', 'profile']),
-    });
+  return { mentorsQuery, updateMentor, deleteMentor };
+}
 
-    const deleteMentor = useMutation({
-        mutationFn: api.deleteMentor,
-        onSuccess: () => qc.invalidateQueries(['mentors']),
-    });
-
-    const enrollProgram = useMutation({
-        mutationFn: api.enrollProgram,
-        onSuccess: () => qc.invalidateQueries(['mentors']),
-    });
-
-    const leaveProgram = useMutation({
-        mutationFn: api.leaveProgram,
-        onSuccess: () => qc.invalidateQueries(['mentors']),
-    });
-
-    const changePassword = useMutation({
-        mutationFn: api.changePassword,
-    });
-
-    return {
-        mentorsQuery,
-        useMentor,
-        updateMentor,
-        updateOwnProfile,
-        deleteMentor,
-        enrollProgram,
-        leaveProgram,
-        changePassword,
-    };
+export function useMentor(id) {
+  const api = useMentorApi();
+  return useQuery({
+    queryKey: ['mentor', id],
+    queryFn: () => api.getById(id),
+    enabled: !!id,
+  });
 }

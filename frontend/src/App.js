@@ -1,153 +1,33 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes } from "react-router-dom";
+import Layout from "./components/layout/Layout";
 
-// layout
-import Layout from './components/layout/Layout';
-
-// pages
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Unauthorized from './pages/Unauthorized';
-
-// Application feature
-import ApplicationsList from './pages/Application/ApplicationsList';
-import ApplicationDetail from './pages/Application/ApplicationDetail';
-import ApplicationEditForm from './pages/Application/ApplicationEditForm';
-import ApplicationForm from './pages/Application/ApplicationForm';
-
-// Mentorship feature
-import Mentors from './pages/Mentorship/Mentor';
-import ProtectedUpdateMentor from './pages/Mentorship/UpdateMentor';
-
-// Program feature
-import ProgramList from './pages/Program/ProgramList';
-import ProgramForm from './pages/Program/ProgramForm';
-
-// Report feature
-import Reports from './pages/Reports/Reports';
-import ReportForm from './pages/Reports/ReportForm';
-import Progress from './pages/Reports/Progress';
-import ProgressForm from './pages/Reports/ProgressForm';
-
-// Session feature
-import SessionList from './pages/Session/SessionList';
-import SessionForm from './pages/Session/SessionForm';
-
-//Availability feature
-import AvailabilityForm from './pages/Availability/Availability';
-
-// Profile feature
-import Profile from './pages/Profile/Profile';
-// import UsersList from './components/User/UsersList'; // Admin only
-// import UserDetail from './components/User/UserDetail'; // Admin only
-
-// Guards
-import RequireRole from './components/RequireRole';
-
-// constants
-import { UserRole } from './constants/UserRole';
-import AvailabilityList from './pages/Availability/AvailabilityList';
+// Route groups
+import authRoutes from "./routes/authRoutes";
+import programRoutes from "./routes/programRoutes";
+import applicationRoutes from "./routes/applicationRoutes";
+import mentorRoutes from "./routes/mentorRoutes";
+import reportRoutes from "./routes/reportRoutes";
+import sessionRoutes from "./routes/sessionRoutes";
+import availabilityRoutes from "./routes/availabilityRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 function App() {
-    return (
-        <Router>
-            <Layout>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-
-                    {/* Programs */}
-                    <Route path="/programs" element={<ProgramList />} />
-                    <Route 
-                        path="/programs/new" 
-                        element={
-                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
-                            <ProgramForm />
-                            </RequireRole>
-                        }
-                    />
-                    <Route 
-                        path="/programs/:id/edit" 
-                        element={
-                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
-                                <ProgramForm />
-                            </RequireRole>
-                        }
-                    />
-
-                    {/* Applications */}
-                    <Route path="/applications" element={ <ApplicationsList /> } />
-                    <Route path="/applications/new" element={ <ApplicationForm /> } />
-                    <Route path="/applications/:id" element={<ApplicationDetail /> } />
-                    <Route path="/applications/:id/edit" element={<ApplicationEditForm /> } />
-                    <Route 
-                        path="/applications/apply" 
-                        element={
-                        <RequireRole allowedRoles={[UserRole.STARTUP]}>
-                            <ApplicationForm />
-                        </RequireRole>
-                        } 
-                    />
-
-                    {/* Mentorship */}
-                    <Route path="/mentor" element={ <Mentors />} />
-                    <Route 
-                        path="/mentor/update/:id" 
-                        element={
-                        <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR]}>
-                            <ProtectedUpdateMentor />
-                        </RequireRole>
-                        } 
-                    />
-
-                    {/* Reports */}
-                    <Route path="/reports" element={<Reports />} />
-                    <Route path="/reports/new" element={<ReportForm />} />
-
-                    <Route path="/progress" element={<Progress />} />
-                    <Route path="/progress/new" element={<ProgressForm />} />
-
-                    <Route path="/profile" element={<Profile />} />
-
-                    <Route path="/unauthorized" element={<Unauthorized />} />
-                    
-                    {/* Sessions */}
-                    <Route path="/sessions" element={<SessionList />} />
-                    <Route 
-                        path="/sessions/new" 
-                        element={
-                            <SessionForm />
-                        }
-                    />
-                    <Route 
-                        path="/sessions/:id/edit" 
-                        element={
-                                <SessionForm />
-                        }
-                    />
-
-
-                    {/* Availability */}
-                    <Route path="/availabilitylist" element={<AvailabilityList />} />
-                    <Route 
-                        path="/availabilitylist/new" 
-                        element={
-                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
-                            <AvailabilityForm />
-                            </RequireRole>
-                        }
-                    />
-                    <Route 
-                        path="/availabilitylist/:id/edit" 
-                        element={
-                            <RequireRole allowedRoles={[UserRole.ADMIN]}>
-                                <AvailabilityForm />
-                            </RequireRole>
-                        }
-                    />
-                </Routes>
-            </Layout>
-        </Router>
-    );
+  return (
+    <Router>
+      <Layout>
+        <Routes>
+          {authRoutes}
+          {programRoutes}
+          {applicationRoutes}
+          {mentorRoutes}
+          {reportRoutes}
+          {sessionRoutes}
+          {availabilityRoutes}
+          {profileRoutes}
+        </Routes>
+      </Layout>
+    </Router>
+  );
 }
 
 export default App;
