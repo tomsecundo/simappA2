@@ -32,10 +32,6 @@ import ProgressForm from './pages/Reports/ProgressForm';
 import SessionList from './pages/Session/SessionList';
 import SessionForm from './pages/Session/SessionForm';
 
-// Session feature
-import SessionList from './pages/Session/SessionList';
-import SessionForm from './pages/Session/SessionForm';
-
 //Availability feature
 import AvailabilityForm from './pages/Availability/Availability';
 
