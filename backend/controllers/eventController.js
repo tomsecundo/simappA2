@@ -1,5 +1,6 @@
 const { Event, EventType, EventCoverage } = require('../models/eventModel');
 const { EventRegistration  } = require('../models/eventRegistrationModel');
+const { ApplicationModel } = require('../models/ApplicationModel');
 
 // Create a new event
 const createEvent = async (req, res) => {
@@ -168,11 +169,21 @@ const deleteEvent = async (req, res) => {
 const registerForEvent = async (req, res) => {
     try {
         const {eventId} = req.params;
-        const { applicationId } = req.body || {};
-
 
         const event = await Event.findById(eventId);
         if(!event) return res.status(404).json({ message: 'Event not found' });
+        
+        let applicationId = req.body?.applicationId;
+        if (!applicationId) {
+            const app = await ApplicationModel.findOne({ user: req.user._id })
+            .sort({ createdAt: -1 })
+            .select('_id');
+
+        if (!app) {
+            return res.status(400).json({ message: 'No applications submitted'});
+        }
+        applicationId = app._id;
+        }
 
         const reg = await EventRegistration.create({
             event: eventId,
@@ -219,7 +230,7 @@ const registerForEvent = async (req, res) => {
             }
             res.json(regs);
         } catch (err) {
-            res.status(500).json({  message: 'Failed to load registrations', error: err.message});
+            res.status(500).json({  message: 'There are no registered attendees for this event', error: err.message});
         }
     };
     
@@ -227,23 +238,10 @@ const registerForEvent = async (req, res) => {
     const listMyRegistrations = async (req, res) => {
         try {
             const regs = await EventRegistration
-            .find({ user: req.user._id, status: 'Registered'})
-            .populate('event', 'eventName eventDate eventVenue eventType coverage')
-            .populate('application', 'applicationName')
-            .sort({ createdAt: -1 })
-            .lean();
-
-            if (regs.length === 0) {
-                return res.status(200).json({
-                    message: 'Not registered to any event/s',
-                    registrations: []
-                });
-            }
-
-            res.json(regs.map(r => ({
-                event: r.event,
-                application: r.application ?? null
-        })));
+                .find({ user: req.user._id, status: 'Registered'})
+                .select('event')
+                .lean();
+            res.json(regs.map(r => String(r.event)));
         } catch (err) {
             res.status(500).json({ message: 'Failed to load my registrations', error: err.message });
         }
