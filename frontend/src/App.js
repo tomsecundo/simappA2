@@ -10,6 +10,7 @@ import assignmentRoutes  from "./routes/assignmentRoutes";
 import reportRoutes from "./routes/reportRoutes";
 import sessionRoutes from "./routes/sessionRoutes";
 import availabilityRoutes from "./routes/availabilityRoutes";
+import eventRoutes from "./routes/eventRoutes";
 import profileRoutes from "./routes/profileRoutes";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           {reportRoutes}
           {sessionRoutes}
           {availabilityRoutes}
+          {eventRoutes}
           {profileRoutes}
         </Routes>
       </Layout>
