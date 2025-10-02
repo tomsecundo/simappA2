@@ -37,22 +37,20 @@ const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
             label: 'Mentors',
             children: [
                 { label: 'All Mentors', path: '/mentor' },
-                { label: 'Enroll in Program', path: '/mentors/enroll' },
             ],
         },
         {
-            label: 'Users',
+            label: 'Availability',
             children: [
-                { label: 'All Users', path: '/users' },
-                { label: 'Profile', path: '/user/profile' },
+                { label: 'Availability', path: '/availabilitylist' },
+                { label: 'New Availability', path: '/availabilitylist/new' },
             ],
         },
         {
-            label: 'Admin',
+            label: 'Sessions',
             children: [
-                { label: 'All Accounts', path: '/admin/accounts' },
-                { label: 'Assign Role', path: '/admin/assign-role' },
-                { label: 'Promote to Mentor', path: '/admin/promote-mentor' },
+                { label: 'All Sessions', path: '/sessions' },
+                { label: 'New Session', path: '/sessions/new' },
             ],
         },
         {
