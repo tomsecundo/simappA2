@@ -68,22 +68,6 @@ const getProgressById = async (req, res) => {
     }
 };
 
-// Get a report by reportID
-const getReportById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const report = await Report.findById(id);
-        
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
-        }
-        
-        res.status(200).json(report);
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
-    }
-};
-
 const getProgressByApplicationId = async (req, res) => {
     try {
         const { id } = req.params; // this is the applicationId
@@ -100,6 +84,61 @@ const getProgressByApplicationId = async (req, res) => {
     }
 };
 
+const getProgressByMentorEmail = async (req, res) => {
+    try {
+        const { id } = req.params; // this is the applicationId
+        // Find all progress documents with this applicationId
+        const progress = await Progress.find({ mentorEmail: id });
+
+        if (!progress || progress.length === 0) {
+            return res.status(404).json({ message: 'No progress found for this mentor' });
+        }
+
+        res.status(200).json(progress);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch progress', error: error.message });
+    }
+};
+
+const updatePhase = async (req, res) => {
+    try {
+      const { applicationId } = req.params;
+      const { phase, status } = req.body;
+  
+      if (!phase || !status) {
+        return res.status(400).json({ message: 'Phase and status are required.' });
+      }
+  
+      // Validate phase
+      const validPhases = ['phase1', 'phase2', 'phase3', 'phase4'];
+      if (!validPhases.includes(phase)) {
+        return res.status(400).json({ message: 'Invalid phase.' });
+      }
+  
+      // Validate status
+      const validStatuses = ['Not Started', 'Started', 'Ongoing', 'Completed'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status.' });
+      }
+  
+      // Find and update the specific phase
+      const updatedProgress = await Progress.findOneAndUpdate(
+        { applicationId },
+        { [phase]: status },
+        { new: true }
+      );
+  
+      if (!updatedProgress) {
+        return res.status(404).json({ message: 'Progress not found for this application.' });
+      }
+  
+      res.status(200).json(updatedProgress);
+  
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Failed to update phase.', error: err.message });
+    }
+  };
 // Update report remarks
 const updateProgress = async (req, res) => {
     try {
@@ -156,6 +195,8 @@ module.exports = {
     createProgress, 
     getAllProgress,
     getProgressByApplicationId,
+    getProgressByMentorEmail,
+    updatePhase,
     updateProgress,
     deleteReport
 };

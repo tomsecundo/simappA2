@@ -4,6 +4,8 @@ const {
     getAllProgress,
     createProgress, 
     getProgressByApplicationId,
+    getProgressByMentorEmail,
+    updatePhase,
     updateProgress
 } = require('../controllers/progressController');
 const { protect } = require('../middleware/authMiddleware');
@@ -11,6 +13,8 @@ const { protect } = require('../middleware/authMiddleware');
 // Public route for posting progress
 router.get('/', getAllProgress);
 router.post('/new', createProgress);
+router.get('/mentor/:id', getProgressByMentorEmail);
+router.put('/:applicationId/update-phase', updatePhase);
 
 // Protected routes for managing applications
 router.get('/:id', getProgressByApplicationId);
