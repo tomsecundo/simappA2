@@ -15,7 +15,7 @@ const protect = async (req, res, next) => {
         const user = await UserModel.findById(decoded.id).select('-password');
         if (!user) return res.status(401).json({ message: 'User not found' });
 
-        req.user = reassign;
+        req.user = user;
         next();
     } catch (error) {
         console.error("JWT Error:", error.message);
