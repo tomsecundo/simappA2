@@ -18,10 +18,10 @@ function ApplicationsTable({ applications = [], onView }) {
             : applications.filter((app) => app.status === statusFilter);
 
     return (
-        <div className="container mx-auto px-4 py-6">
+        <>
             {/* Header with filter */}
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Applications</h2>
+                <div className='flex'></div>
                 <div className="flex items-center">
                     <label htmlFor="statusFilter" className="mr-2 text-sm">
                         Filter by Status:
@@ -117,7 +117,7 @@ function ApplicationsTable({ applications = [], onView }) {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </>
     );
 }
 

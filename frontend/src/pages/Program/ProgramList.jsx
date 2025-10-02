@@ -10,12 +10,10 @@ function ProgramList() {
     if (programsQuery.isError) return <p className="p-4 text-red-500">Failed to load programs.</p>;
 
     return (
-        <div className="p-6">
+        <div className="p-4">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Programs</h2>
-                <Link
-                    to="/programs/new"
-                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                <h2>Programs</h2>
+                <Link to="/programs/new" className="btn btn-primary my-3"
                 >
                     New Program
                 </Link>

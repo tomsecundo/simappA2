@@ -36,12 +36,19 @@ export function useApplicationApi() {
         return res.data;
     };
 
+    const getApplicationsByProgram = async (programId) => {
+        const res = await fetch(`/api/applications/program/${programId}`);
+        if (!res.ok) throw new Error('Failed to fetch program applications');
+        return res.json();
+    };
+
     return { 
         getApplications, 
         getApplicationById, 
         createApplication, 
         updateApplication,
         updateApplicationStatus, 
-        deleteApplication 
+        deleteApplication,
+        getApplicationsByProgram
     };
 }

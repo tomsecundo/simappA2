@@ -6,11 +6,39 @@ export function useProgramsHook() {
   const api = useProgramApi();
   const qc = useQueryClient();
 
-  const programsQuery = useQuery({ queryKey: ['programs'], queryFn: api.getPrograms });
-  const useProgram = (id) =>
-    useQuery({ queryKey: ['program', id], queryFn: () => api.getProgramById(id), enabled: !!id });
+  // Queries
+  const programsQuery = useQuery({
+    queryKey: ['programs'],
+    queryFn: api.getPrograms,
+  });
 
-  // Mentor
+  const useProgram = (id) =>
+    useQuery({
+      queryKey: ['program', id],
+      queryFn: () => api.getProgramById(id),
+      enabled: !!id,
+    });
+
+  // ✅ CRUD mutations
+  const createProgram = useMutation({
+    mutationFn: api.createProgram,
+    onSuccess: () => qc.invalidateQueries(['programs']),
+  });
+
+  const updateProgram = useMutation({
+    mutationFn: ({ id, data }) => api.updateProgram(id, data),
+    onSuccess: (_d, { id }) => {
+      qc.invalidateQueries(['programs']);
+      qc.invalidateQueries(['program', id]);
+    },
+  });
+
+  const deleteProgram = useMutation({
+    mutationFn: api.deleteProgram,
+    onSuccess: () => qc.invalidateQueries(['programs']),
+  });
+
+  // Mentor self
   const enrollAsMentor = useMutation({
     mutationFn: api.enrollAsMentor,
     onSuccess: () => qc.invalidateQueries(['programs']),
@@ -21,7 +49,7 @@ export function useProgramsHook() {
     onSuccess: () => qc.invalidateQueries(['programs']),
   });
 
-  // Admin
+  // Admin mentor assignment
   const addProgramToMentor = useMutation({
     mutationFn: api.addProgramToMentor,
     onSuccess: () => qc.invalidateQueries(['programs']),
@@ -33,23 +61,35 @@ export function useProgramsHook() {
   });
 
   // Applications
-  const useProgramApplications = (program_id) =>
+  const useProgramApplications = (programId) =>
     useQuery({
-      queryKey: ['programApplications', program_id],
-      queryFn: () => api.getProgramApplications(program_id),
-      enabled: !!program_id,
+      queryKey: ['programApplications', programId],
+      queryFn: async () => {
+        try {
+          return await api.getProgramApplications(programId);
+        } catch (error) {
+          if (error.response?.status === 404) {
+            return [];
+          }
+          throw error;
+        }
+      },
+      enabled: !!programId,
     });
 
   const acceptApplication = useMutation({
     mutationFn: api.acceptApplication,
-    onSuccess: (_d, { program_id }) => {
-      qc.invalidateQueries(['programApplications', program_id]);
+    onSuccess: (_d, { programId }) => {
+      qc.invalidateQueries(['programApplications', programId]);
     },
   });
 
   return {
     programsQuery,
     useProgram,
+    createProgram,
+    updateProgram,
+    deleteProgram,
     enrollAsMentor,
     leaveProgram,
     addProgramToMentor,

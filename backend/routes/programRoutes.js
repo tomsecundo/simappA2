@@ -4,11 +4,15 @@ const ProgramController = require("../controllers/programController");
 const validateProgram = require("../middleware/validators/validateProgram");
 const { protect, hasRole } = require('../middleware/authMiddleware');
 const { UserRole } = require('../models/UserModel');
+const ApplicationController = require("../controllers/applicationController");
 
 router.post("/", protect, hasRole(UserRole.ADMIN), validateProgram, ProgramController.create);
 router.get("/", protect, ProgramController.getAll);
 router.get("/:id", protect, ProgramController.getById);
 router.put("/:id", protect, hasRole(UserRole.ADMIN), ProgramController.update);
+
+router.get("/:id/applications", protect, ApplicationController.getByProgramId);
+
 router.delete("/:id", protect, hasRole(UserRole.ADMIN), ProgramController.delete);
 
 module.exports = router;

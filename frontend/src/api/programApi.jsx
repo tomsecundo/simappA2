@@ -1,4 +1,3 @@
-// api/programApi.jsx
 import axiosInstance from '../services/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,6 +6,7 @@ const API_URL = '/api/programs';
 export function useProgramApi() {
   const { getAuthHeaders } = useAuth();
 
+  // CRUD
   const getPrograms = async () => {
     const res = await axiosInstance.get(API_URL, { headers: getAuthHeaders() });
     return res.data;
@@ -17,56 +17,51 @@ export function useProgramApi() {
     return res.data;
   };
 
-  // Mentor self
-  const enrollAsMentor = async (program_id) => {
-    const res = await axiosInstance.post(
-      `/api/mentor/enroll`,
-      { program_id },
-      { headers: getAuthHeaders() }
-    );
+  const createProgram = async (data) => {
+    const res = await axiosInstance.post(API_URL, data, { headers: getAuthHeaders() });
     return res.data;
   };
 
-  const leaveProgram = async (program_id) => {
-    const res = await axiosInstance.post(
-      `/api/mentor/leave`,
-      { program_id },
-      { headers: getAuthHeaders() }
-    );
+  const updateProgram = async (id, data) => {
+    const res = await axiosInstance.put(`${API_URL}/${id}`, data, { headers: getAuthHeaders() });
     return res.data;
   };
 
-  // Admin assign/remove mentor to program
-  const addProgramToMentor = async ({ mentorId, program_id }) => {
-    const res = await axiosInstance.post(
-      `/api/mentor/${mentorId}/add-program`,
-      { program_id },
-      { headers: getAuthHeaders() }
-    );
+  const deleteProgram = async (id) => {
+    const res = await axiosInstance.delete(`${API_URL}/${id}`, { headers: getAuthHeaders() });
     return res.data;
   };
 
-  const removeProgramFromMentor = async ({ mentorId, program_id }) => {
-    const res = await axiosInstance.post(
-      `/api/mentor/${mentorId}/remove-program`,
-      { program_id },
-      { headers: getAuthHeaders() }
-    );
+  // Mentor/Admin actions (already there)
+  const enrollAsMentor = async (programId) => {
+    const res = await axiosInstance.post(`/api/mentor/enroll`, { programId }, { headers: getAuthHeaders() });
     return res.data;
   };
 
-  // Applications
-  const getProgramApplications = async (program_id) => {
-    const res = await axiosInstance.get(`/api/applications?programId=${program_id}`, {
-      headers: getAuthHeaders(),
-    });
+  const leaveProgram = async (programId) => {
+    const res = await axiosInstance.post(`/api/mentor/leave`, { programId }, { headers: getAuthHeaders() });
     return res.data;
   };
 
-  const acceptApplication = async ({ applicationId }) => {
+  const addProgramToMentor = async ({ mentorId, programId }) => {
+    const res = await axiosInstance.post(`/api/mentor/${mentorId}/add-program`, { programId }, { headers: getAuthHeaders() });
+    return res.data;
+  };
+
+  const removeProgramFromMentor = async ({ mentorId, programId }) => {
+    const res = await axiosInstance.post(`/api/mentor/${mentorId}/remove-program`, { programId }, { headers: getAuthHeaders() });
+    return res.data;
+  };
+
+  const getProgramApplications = async (programId) => {
+    const res = await axiosInstance.get(`/api/programs/${programId}/applications`, { headers: getAuthHeaders() });
+    return res.data;
+  };
+
+  const acceptApplication = async ({ applicationId, status }) => {
     const res = await axiosInstance.patch(
       `/api/applications/${applicationId}/status`,
-      { status: 'accepted' },
+      { status },
       { headers: getAuthHeaders() }
     );
     return res.data;
@@ -75,6 +70,9 @@ export function useProgramApi() {
   return {
     getPrograms,
     getProgramById,
+    createProgram,
+    updateProgram,
+    deleteProgram,
     enrollAsMentor,
     leaveProgram,
     addProgramToMentor,
