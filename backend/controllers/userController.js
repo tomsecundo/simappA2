@@ -3,12 +3,24 @@ const User = require('../domain/UserDomain');
 const UserRepo = require('../repositories/UserRepo');
 const MentorRepo = require('../repositories/MentorRepo');
 const { UserRole } = require('../models/UserModel');
+const UserFactory = require('../domain/factories/UserFactory');
 
 class UserController {   
     async getAllUsers(req, res, next) {
         try {
             const users = await UserRepo.findAll();
-            res.json(users);
+            const domainUsers = users.map(u => UserFactory.createUser(u.toObject()));
+            res.json(domainUsers.map(u => ({
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                role: u.role,
+                number: u.number,
+                affiliation: u.affiliation,
+                address: u.address,
+                expertise: u.expertise || null,
+                programs: u.programs || []
+            })));
         } catch (error) {
             next(error);
         }
@@ -21,15 +33,25 @@ class UserController {
             const user = await UserRepo.findById(req.user._id);
             if (!user) return res.status(404).json({ message: 'User not found' });
 
+            let data = user.toObject();
             if (user.role === UserRole.MENTOR) {
                 const mentor = await MentorRepo.findById(user._id);
-                return res.json({
-                    ...user.toObject(),
-                    expertise: mentor?.expertise || null,
-                    programs: mentor?.programs || [],
-                });
+                data = { ...data, ...mentor?.toObject() };
             }
-            res.json(user);
+
+            const domainUser = UserFactory.createUser(data);
+
+            res.json({
+                id: domainUser.id,
+                name: domainUser.name,
+                email: domainUser.email,
+                role: domainUser.role,
+                number: domainUser.number,
+                affiliation: domainUser.affiliation,
+                address: domainUser.address,
+                expertise: domainUser.expertise || null,
+                programs: domainUser.programs || [],
+            });
         } catch (err) {
             next(err);
         }
@@ -38,8 +60,20 @@ class UserController {
     async getUserById(req, res, next) {
         try {
             const user = await UserRepo.findById(req.params.id);
-            if (!user) return res.status(404).json({message:'User not Found'});
-            res.json(user);
+            if (!user) return res.status(404).json({ message: 'User not Found' });
+
+            const domainUser = UserFactory.createUser(user.toObject());
+            res.json({
+                id: domainUser.id,
+                name: domainUser.name,
+                email: domainUser.email,
+                role: domainUser.role,
+                number: domainUser.number,
+                affiliation: domainUser.affiliation,
+                address: domainUser.address,
+                expertise: domainUser.expertise || null,
+                programs: domainUser.programs || []
+            });
         } catch (error) {
             next(error);
         }
@@ -47,8 +81,24 @@ class UserController {
 
     async updateUserProfile(req, res, next) {
         try {
-            const updatedUser = await UserRepo.updateById(req.user._id, req.body);
-            res.json(updatedUser);
+            let updatedUser = await UserRepo.updateById(req.user._id, req.body);
+            if (updatedUser && updatedUser.role === UserRole.MENTOR) {
+                updatedUser = await MentorRepo.updateById(req.user._id, req.body);
+            }
+            if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+
+            const domainUser = UserFactory.createUser(updatedUser.toObject());
+            res.json({
+                id: domainUser.id,
+                name: domainUser.name,
+                email: domainUser.email,
+                role: domainUser.role,
+                number: domainUser.number,
+                affiliation: domainUser.affiliation,
+                address: domainUser.address,
+                expertise: domainUser.expertise || null,
+                programs: domainUser.programs || []
+            });
         } catch (error) {
             if (error.code === 11000 && error.keyPattern?.email) {
                 return res.status(400).json({ 
@@ -68,17 +118,24 @@ class UserController {
             const { id } = req.params;
             const updates = req.body;
 
-            // Update base user fields
             let updatedUser = await UserRepo.updateById(id, updates);
-
-            // If mentor, also update mentor-specific fields
             if (updatedUser && updatedUser.role === UserRole.MENTOR) {
                 updatedUser = await MentorRepo.updateById(id, updates);
             }
-
             if (!updatedUser) return res.status(404).json({ message: 'User not found' });
 
-            res.json(updatedUser);
+            const domainUser = UserFactory.createUser(updatedUser.toObject());
+            res.json({
+                id: domainUser.id,
+                name: domainUser.name,
+                email: domainUser.email,
+                role: domainUser.role,
+                number: domainUser.number,
+                affiliation: domainUser.affiliation,
+                address: domainUser.address,
+                expertise: domainUser.expertise || null,
+                programs: domainUser.programs || []
+            });
         } catch (error) {
             if (error.code === 11000 && error.keyPattern?.email) {
                 return res.status(400).json({ message: 'Email already exists. Please use a different email address.' });
@@ -104,7 +161,16 @@ class UserController {
             user.password = hashed;
             await user.save();
 
-            res.json({ message: 'Password updated successfully' });
+            const domainUser = UserFactory.createUser(user.toObject());
+            res.json({ 
+                message: 'Password updated successfully',
+                user: {
+                    id: domainUser.id,
+                    name: domainUser.name,
+                    email: domainUser.email,
+                    role: domainUser.role
+                }
+            });
         } catch (error) {
             next(error);
         }
