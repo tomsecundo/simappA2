@@ -24,6 +24,13 @@ class ApplicationRepository {
                         .populate("createdBy", "name email role");
     }
 
+    async findByProgramId(programId) {
+        return await ApplicationModel.find({ program: programId })
+            .sort({ createdAt: -1 })
+            .populate("program", "title")
+            .populate("createdBy", "name email role");
+    }
+
     async update(id, data) {
         return await ApplicationModel
                         .findByIdAndUpdate(id, data, { new: true })

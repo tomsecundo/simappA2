@@ -1,7 +1,9 @@
 const crypto = require('crypto');
 const Application = require("../domain/ApplicationDomain");
 const ApplicationRepo = require('../repositories/ApplicationRepo');
+const ProgramRepo = require('../repositories/ProgramRepo');
 const { ApplicationStatus } = require('../models/ApplicationModel');
+const { UserRole } = require('../models/UserModel');
 
 class ApplicationController {
     async create(req, res, next) {
@@ -50,6 +52,50 @@ class ApplicationController {
                 return res.status(404).json({ message: "Application not found" });
             }
             res.json(application);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getByProgramId(req, res, next) {
+        try {
+            const programId = req.params.programId || req.params.id;
+
+            // Ensure program exists
+            const program = await ProgramRepo.findById(programId);
+            if (!program) {
+                return res.status(404).json({ message: "Program not found" });
+            }
+
+            let applications;
+
+            if (req.user.role === UserRole.ADMIN) {
+                // Admin sees all
+                applications = await ApplicationRepo.findByProgramId(programId);
+            } else if (req.user.role === UserRole.MENTOR) {
+                // Mentor must be assigned to program
+                const isAssigned = program.mentors.some(
+                    (m) => m.toString() === req.user._id.toString()
+                );
+                if (!isAssigned) {
+                    return res.status(403).json({ message: "Access denied: not assigned to this program" });
+                }
+                    
+                applications = await ApplicationRepo.findByProgramId(programId);
+            } else if (req.user.role === UserRole.STARTUP) {
+                // Startup sees only their applications
+                applications = await ApplicationRepo.findByProgramId(programId);
+                applications = applications.filter(
+                    (app) => app.createdBy._id.toString() === req.user._id.toString()
+                );
+            } else {
+                return res.status(403).json({ message: "Invalid role" });
+            }
+
+            if (!applications || applications.length === 0) {
+                return res.status(404).json({ message: "No applications found for this program" });
+            }
+            res.json(applications);
         } catch (error) {
             next(error);
         }

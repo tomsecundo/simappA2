@@ -5,6 +5,8 @@ const validateApplication = require("../middleware/validators/validateApplicatio
 const { protect, hasRole } = require("../middleware/authMiddleware");
 const { UserRole } = require('../models/UserModel');
 
+router.get('/program/:programId', protect, ApplicationController.getByProgramId);
+
 // Startup: can submit application
 // router.post('/', protect, hasRole(UserRole.STARTUP), validateApplication, ApplicationController.create);
 router.post('/', protect, validateApplication, ApplicationController.create);

@@ -45,6 +45,13 @@ export function useApplicationsHook() {
         onSuccess: () => qc.invalidateQueries(['applications']),
     });
 
+    const useApplicationsByProgram = (program) => 
+        useQuery({
+        queryKey: ['applicationsByProgram', program],
+        queryFn: () => api.getApplicationsByProgram(program),
+        enabled: !!program,
+    });  
+
     return {
         // queries
         applicationsQuery,
@@ -53,6 +60,7 @@ export function useApplicationsHook() {
         updateApplication,
         updateStatus,
         deleteApplication,
+        useApplicationsByProgram,
     }
     
     // We do not need useState / useEffect since we implemented useQuery already

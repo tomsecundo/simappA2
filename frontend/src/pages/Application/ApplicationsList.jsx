@@ -14,12 +14,16 @@ function ApplicationsList() {
 
     return (
         <div className="p-4">
-            {/* <ErrorBanner message={error} onClose={() => setError('')} /> */}
-            <h2>Applications</h2>
-            <Link to="/applications/new" className="btn btn-primary my-3">New Application</Link>
+            <div className="flex justify-between items-center mb-6">
+                <h2>Applications</h2>
+                <Link to="/applications/new" className="btn btn-primary my-3">
+                    New Application
+                </Link>
+            </div>
             <ApplicationTable 
                 applications={applications} 
-                onView={(id) => navigate(`/applications/${id}`)} />
+                onView={(id) => navigate(`/applications/${id}`)} 
+            />
         </div>
     );
 }
