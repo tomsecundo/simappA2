@@ -33,17 +33,17 @@ export function useProgramsHook() {
   });
 
   // Applications
-  const useProgramApplications = (programId) =>
+  const useProgramApplications = (program_id) =>
     useQuery({
-      queryKey: ['programApplications', programId],
-      queryFn: () => api.getProgramApplications(programId),
-      enabled: !!programId,
+      queryKey: ['programApplications', program_id],
+      queryFn: () => api.getProgramApplications(program_id),
+      enabled: !!program_id,
     });
 
   const acceptApplication = useMutation({
     mutationFn: api.acceptApplication,
-    onSuccess: (_d, { programId }) => {
-      qc.invalidateQueries(['programApplications', programId]);
+    onSuccess: (_d, { program_id }) => {
+      qc.invalidateQueries(['programApplications', program_id]);
     },
   });
 
