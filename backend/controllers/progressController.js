@@ -83,19 +83,20 @@ const getReportById = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch report', error: error.message });
     }
 };
-// Get reports by report ID
-const getReportByApplicationId = async (req, res) => {
+
+const getProgressByApplicationId = async (req, res) => {
     try {
-        const { id } = req.params;
-        const report = await Report.findById(id);
-        
-        if (!report) {
-            return res.status(404).json({ message: 'Report not found' });
+        const { id } = req.params; // this is the applicationId
+        // Find all progress documents with this applicationId
+        const progress = await Progress.find({ applicationId: id });
+
+        if (!progress || progress.length === 0) {
+            return res.status(404).json({ message: 'No progress found for this application' });
         }
-        
-        res.status(200).json(report);
+
+        res.status(200).json(progress);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch report', error: error.message });
+        res.status(500).json({ message: 'Failed to fetch progress', error: error.message });
     }
 };
 
@@ -154,7 +155,7 @@ const deleteReport = async (req, res) => {
 module.exports = { 
     createProgress, 
     getAllProgress,
-    getProgressById,
+    getProgressByApplicationId,
     updateProgress,
     deleteReport
 };

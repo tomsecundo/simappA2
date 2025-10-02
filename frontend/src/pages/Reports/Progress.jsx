@@ -10,28 +10,59 @@ const Progress = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  const role = user.role;
+
   // Fetch progress
   useEffect(() => {
-    const fetchProgress = async (res, req) => {
+    const fetchProgress = async () => {
       try {
-        
-        //const { id } = req.params;
-        const response = await axiosInstance.get('/api/progress', {
-          headers: { Authorization: `Bearer ${user.token}` }
-        });
-        
+        let response;
+  
+        if (role === "Admin") {
+          // Admin fetches all progress
+          response = await axiosInstance.get('/api/progress', {
+            headers: { Authorization: `Bearer ${user.token}` }
+          });
+        } 
+        else if (role === "Mentor") {
+          // Optional: mentor-specific progress logic
+        } 
+        else if (role === "Startup") {
+          // Step 1: Fetch the startup's application document
+          const appResponse = await axiosInstance.get(
+            `/api/applications/user/${user.id}`, 
+            { headers: { Authorization: `Bearer ${user.token}` } }
+          );
+  
+          const application = appResponse.data[0];
+          console.log(application);
+          if (!application) {
+            setError('No application found for this user.');
+            setLoading(false);
+            return;
+          }
+  
+          const applicationId = application.applicationId; // Use the "applicationId" field
+          console.log("Application ID:", applicationId);
+  
+          // Step 2: Fetch progress using applicationId
+          response = await axiosInstance.get(
+            `/api/progress/${applicationId}`, 
+            { headers: { Authorization: `Bearer ${user.token}` } }
+          );
+        }
+  
         setProgress(response.data);
         setLoading(false);
+  
       } catch (err) {
-        setError(err.message + ': Failed to fetch progress');
-         
+        setError(err.response?.data?.message || err.message + ': Failed to fetch progress');
         setLoading(false);
       }
     };
-    
-    
-    fetchProgress();
-  }, [user]);
+  
+    if (user) fetchProgress();
+  }, [user, role]);
 
   
   // Format date for display
@@ -56,6 +87,8 @@ const Progress = () => {
   if (loading) return <div className="text-center py-10">Loading progress...</div>;
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
   
+
+
   return (
     <div className="container-fluid mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
@@ -127,6 +160,7 @@ const Progress = () => {
             <div>
               <p>Application ID: {progress.applicationId}</p>
               <p>Mentor: {progress.mentorEmail}</p>
+              <p>Startup Name: {progress.startupName}</p>
             </div>
           ))}
         </div>
