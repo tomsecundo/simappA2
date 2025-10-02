@@ -20,6 +20,7 @@ router.get('/', protect, hasRole(UserRole.ADMIN, UserRole.MENTOR), MentorControl
 router.get('/:id', protect, MentorController.getById);
 
 // Admin routes
+router.put('/:id', protect, hasRole(UserRole.ADMIN), MentorController.updateMentorByAdmin);
 router.delete('/:id', protect, hasRole(UserRole.ADMIN), MentorController.deleteMentor);
 router.post('/:id/add-program', protect, hasRole(UserRole.ADMIN), MentorController.addProgram);
 router.post('/:id/remove-program', protect, hasRole(UserRole.ADMIN), MentorController.removeProgram);
