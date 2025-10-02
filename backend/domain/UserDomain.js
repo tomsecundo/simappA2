@@ -1,15 +1,21 @@
 class User {
-    constructor({ name, email, role, password, number, affiliation, address }) {
-        if (!name || !email || !role || !password) {
+    constructor({ _id, id, name, email, role, password, number, affiliation, address }) {
+        if (!name || !email || !role ) {
             throw new Error("Missing required fields for User");
         }
+
+        this.id = id || _id || null;
         this.name = name.trim();
         this.email = email;
         this.role = role;
-        this.password = password;
-        this.number = number;
-        this.affiliation = affiliation;
-        this.address = address;
+
+        if (password) {
+            this.password = password;
+        }
+
+        this.number = number || undefined;
+        this.affiliation = affiliation || '';
+        this.address = address || '';
     }
 }
 
