@@ -11,6 +11,8 @@ const Progress = () => {
   const [error, setError] = useState(null);
   
   const role = user.role;
+  const [selectedPhase, setSelectedPhase] = useState('phase1');
+  const [selectedStatus, setSelectedStatus] = useState('Completed');
 
   // Fetch progress
   useEffect(() => {
@@ -25,7 +27,7 @@ const Progress = () => {
           });
         } 
         else if (role === "Mentor") {
-          response = await axiosInstance.get('/api/progress', {
+          response = await axiosInstance.get(`/api/progress/mentor/${user.email}`, {
             headers: { Authorization: `Bearer ${user.token}` }
           });
         } 
@@ -81,6 +83,29 @@ const Progress = () => {
     }
   };
   
+  // Update phase status
+  const updatePhaseStatus = async (applicationId) => {
+    try {
+      const newStatus = selectedStatus; // For simplicity, button always sets Completed
+      await axiosInstance.put(
+        `/api/progress/${applicationId}/update-phase`,
+        { phase: selectedPhase, status: newStatus },
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+
+      // Update local state
+      setProgress(prev =>
+        prev.map(p =>
+          p.applicationId === applicationId ? { ...p, [selectedPhase]: newStatus } : p
+        )
+      );
+
+    } catch (err) {
+      console.error('Failed to update phase', err);
+      alert('Failed to update phase. Please try again.');
+    }
+  };
+  
   if (loading) return <div className="text-center py-10">Loading progress...</div>;
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
   
@@ -123,6 +148,40 @@ const Progress = () => {
                   <p>Mentor: {item.mentorEmail}</p>
                   <p>Startup Name: {item.startupName}</p>
                 </div>
+
+                {/* Only show mentor controls */}
+                {role === 'Mentor' && (
+                  <div className=" bottom-4 right-4 flex items-center space-x-2">
+                    <select
+                      className="border rounded px-2 py-1 text-sm"
+                      value={selectedPhase}
+                      onChange={(e) => setSelectedPhase(e.target.value)}
+                    >
+                      <option value="phase1">Phase 1</option>
+                      <option value="phase2">Phase 2</option>
+                      <option value="phase3">Phase 3</option>
+                      <option value="phase4">Phase 4</option>
+                    </select>
+             
+                    <select
+                      className="border rounded px-2 py-1 text-sm"
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                    >
+                      <option value="Not Started">Not Started</option>
+                      <option value="Started">Started</option>
+                      <option value="Ongoing">Ongoing</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+                      onClick={() => updatePhaseStatus(item.applicationId)}
+                    >
+                      Update Phase
+                    </button>
+                  </div>
+                )}
+
               </div>
             ))
           ) : (
