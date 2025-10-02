@@ -58,7 +58,10 @@ const DashboardNavbar = ({ toggleSidebar }) => {
                     </div>
                 ) : (
                     <div className="ms-auto d-flex">
-                        <Link to="/login" className="nav-link text-white">
+                        <Link 
+                            to="/login" 
+                            className="nav-link text-white px-4 py-2"
+                        >
                             Login
                         </Link>
                         <Link

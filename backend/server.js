@@ -26,7 +26,7 @@ app.use('/api/availability', require('./routes/availabilityRoutes'));
 app.use('/api/progress', require('./routes/progressRoutes'));
 app.use('/api/sessions', require('./routes/sessionRoutes'));
 app.use('/api/assignment', require('./routes/assignmentRoutes'));
-``
+
 // Export the app object for testing
 if (require.main === module) {
     connectDB();
