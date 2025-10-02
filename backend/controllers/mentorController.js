@@ -59,19 +59,12 @@ class MentorController {
                 return res.status(403).json({ message: 'Forbidden' });
             }
 
-            // Split updates: user-level vs mentor-level
-            const { name, email, role, address, expertise, affiliation, number } = req.body;
-
             // Update base user fields
-            let updated = await UserRepo.updateById(targetId, { name, email, role, address, number });
+            let updated = await UserRepo.updateById(targetId, req.body);
 
-            // If mentor-specific fields provided
-            if (updated && (expertise || affiliation)) {
-                updated = await MentorRepo.findByIdAndUpdate(
-                    targetId,
-                    { expertise, affiliation },
-                    { new: true, runValidators: true }
-                );
+            // If mentor, update mentor-specific fields too
+            if (updated && updated.role === UserRole.MENTOR) {
+                updated = await MentorRepo.updateById(targetId, req.body);
             }
 
             if (!updated) return res.status(404).json({ message: 'Mentor not found' });
@@ -177,7 +170,7 @@ class MentorController {
                 return res.status(400).json({ message: 'Both old and new password are required' });
             }
 
-            const mentor = await MentorRepo.findById(req.user._id);
+            const mentor = await MentorRepo.findByIdWithPassword(req.user._id);
             if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
 
             const isMatch = await bcrypt.compare(oldPassword, mentor.password);

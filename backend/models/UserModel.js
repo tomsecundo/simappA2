@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
             required: true
         },
         password: { type: String, required: true },
+        number: { type: String, unique: true, sparse: true },
+        affiliation: { type: String },
+        address: { type: String },
     }, 
     { timestamps: true }
 );

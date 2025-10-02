@@ -28,8 +28,8 @@ export function useUserHook() {
     const updateUserByAdmin = useMutation({
         mutationFn: ({ id, data }) => api.updateUserByAdmin(id, data),
         onSuccess: (_d, { id }) => {
-        qc.invalidateQueries(['users']);
-        qc.invalidateQueries(['user', id]);
+            qc.invalidateQueries(['users']);
+            qc.invalidateQueries(['user', id]);
         },
     });
 

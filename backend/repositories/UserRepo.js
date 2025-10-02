@@ -13,6 +13,10 @@ class UserRepo {
         return UserModel.findById(id).select('-password');
     }
 
+    async findByIdWithPassword(id) {
+        return UserModel.findById(id).select('+password');
+    }
+
     async findByEmail(email) {
         return UserModel.findOne({ email }).select('+password');
     }
@@ -21,8 +25,7 @@ class UserRepo {
         return UserModel.findByIdAndUpdate(id, updates, {
             new: true,
             runValidators: true,
-            select: '-password',
-        });
+        }).select('-password');
     }
 
     async deleteById(id) {

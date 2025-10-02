@@ -20,7 +20,6 @@ const UpdateMentor = () => {
 
     //base user
     name: seed.name || '',
-    university: seed.university || '',
     address: seed.address || '',
   
     //mentor
@@ -44,12 +43,11 @@ const UpdateMentor = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         number: formData.number,
-        expertise: formData.expertise || undefined,
-        affiliation: formData.affiliation || undefined,
-        address: formData.address || undefined,
+        expertise: formData.expertise || '',
+        affiliation: formData.affiliation || '',
+        address: formData.address || '',
 
-        name: formData.name || undefined,
-        university: formData.university || undefined,
+        name: formData.name || '',
       };
 
       try {
@@ -169,9 +167,9 @@ const UpdateMentor = () => {
               />
               <input
                 type="text"
-                placeholder="University (optional)"
-                value={formData.university}
-                onChange={(e) => setFormData({...formData, university: e.target.value})}
+                placeholder="Affiliation (optional)"
+                value={formData.affiliation}
+                onChange={(e) => setFormData({...formData, affiliation: e.target.value})}
                 className="w-full mb-4 p-2 border rounded"
                 required
               />

@@ -17,12 +17,19 @@ export function useMentorsHook() {
             enabled: !!id,
         });
 
+    // Admin update mentor
     const updateMentor = useMutation({
         mutationFn: ({ id, data }) => api.updateMentor(id, data),
         onSuccess: (_d, { id }) => {
             qc.invalidateQueries(['mentors']);
             qc.invalidateQueries(['mentor', id]);
         },
+    });
+
+    // Mentor self-update
+    const updateOwnProfile = useMutation({
+        mutationFn: api.updateOwnProfile,
+        onSuccess: () => qc.invalidateQueries(['mentor', 'profile']),
     });
 
     const deleteMentor = useMutation({
@@ -40,5 +47,18 @@ export function useMentorsHook() {
         onSuccess: () => qc.invalidateQueries(['mentors']),
     });
 
-    return { mentorsQuery, useMentor, updateMentor, deleteMentor, enrollProgram, leaveProgram };
+    const changePassword = useMutation({
+        mutationFn: api.changePassword,
+    });
+
+    return {
+        mentorsQuery,
+        useMentor,
+        updateMentor,
+        updateOwnProfile,
+        deleteMentor,
+        enrollProgram,
+        leaveProgram,
+        changePassword,
+    };
 }

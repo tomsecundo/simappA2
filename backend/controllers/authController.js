@@ -16,10 +16,11 @@ const generateToken = (id) => {
 
 // register a user  
 const registerUser = async (req, res) => {
-    const{name, email, role, password, firstName, lastName, number, expertise, affiliation, address, programs} = req.body;
-
+    const{name, email, role, password, number, expertise, affiliation, address, firstName, lastName, programs} = req.body;
+    
+    const fullName = name || `${firstName?.trim() || ''} ${lastName?.trim() || ''}`;
     try {
-        if (!name || !email || !password || !role) {
+        if (!fullName || !email || !password || !role) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
@@ -27,9 +28,8 @@ const registerUser = async (req, res) => {
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
         if (role === UserRole.MENTOR) {
-            const mentorName = `${firstName?.trim() || ''} ${lastName?.trim() || ''}`;
             const mentor = new Mentor({
-                name: mentorName, 
+                name: fullName, 
                 email, password, role,
                 firstName, 
                 lastName, 
@@ -49,7 +49,16 @@ const registerUser = async (req, res) => {
                 token: generateToken(saveMentor.id),
             });
         } else if (role === UserRole.STARTUP || role === UserRole.ADMIN) {
-            const user = new User({ name, email, role, password });
+            const user = new User({ 
+                name,
+                email, 
+                role, 
+                password, 
+                number: number || '',
+                affiliation: affiliation || '', 
+                address: address || '' 
+            });
+
             const saveUser = await UserRepo.create(user);
 
             return res.status(201).json({
