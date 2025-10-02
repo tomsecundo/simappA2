@@ -1,8 +1,7 @@
 const bcrypt = require('bcrypt');
-const User = require('../domain/UserDomain');
 const UserRepo = require('../repositories/UserRepo');
 const MentorRepo = require('../repositories/MentorRepo');
-const { UserRole } = require('../models/UserModel');
+const { UserModel, UserRole } = require('../models/UserModel');
 
 class UserController {   
     async getAllUsers(req, res, next) {
@@ -57,7 +56,7 @@ class UserController {
             }
             next(error);
         }
-    };
+    }
 
     async updateUserByAdmin(req, res, next) {
         try {
@@ -126,4 +125,23 @@ class UserController {
     };
 }
 
-module.exports = new UserController();
+const listStartups = async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        const roleValue = UserRole.STARTUP || 'Startup';
+        const query = { role: roleValue };
+        if (q) query.name = {$regex: q, $options: 'i'};
+
+        const startups = await UserModel.find(query)
+            .select('_id name email')
+            .lean();
+
+        res.json(startups);
+    } catch (err) {
+        console.error('GET /api/user/startups failed:', err);
+        res.status(500).json({message: 'Failed to load startups', error: err.message});
+    }
+};
+const ctrl = new UserController();
+module.exports = {UserController: ctrl, listStartups};

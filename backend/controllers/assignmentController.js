@@ -109,7 +109,9 @@ const updateAssignment = async (req, res) => {
             return res.status(400).json({message: 'This is auto generated from Report Status.'});
         }
 
-        const assignment = await Assignment.findById(id);
+        const assignment = await Assignment
+        .findById(id)
+
         if (!assignment) {
             return res.status(404).json({ message: 'Assignment not found' });
         }

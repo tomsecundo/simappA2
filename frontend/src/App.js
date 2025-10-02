@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import programRoutes from "./routes/programRoutes";
 import applicationRoutes from "./routes/applicationRoutes";
 import mentorRoutes from "./routes/mentorRoutes";
+import assignmentRoutes  from "./routes/assignmentRoutes";
 import reportRoutes from "./routes/reportRoutes";
 import sessionRoutes from "./routes/sessionRoutes";
 import availabilityRoutes from "./routes/availabilityRoutes";
@@ -20,6 +21,7 @@ function App() {
           {programRoutes}
           {applicationRoutes}
           {mentorRoutes}
+          {assignmentRoutes}
           {reportRoutes}
           {sessionRoutes}
           {availabilityRoutes}
