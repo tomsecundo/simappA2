@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const UserController = require('../controllers/userController');
+const { UserController, listStartups } = require('../controllers/userController');
 const { protect, hasRole } = require('../middleware/authMiddleware');
 const { UserRole } = require('../models/UserModel');
+
+//List of startups
+router.get('/startups', protect, listStartups);
 
 router.get('/profile', protect, UserController.getProfile);
 // update current user profile
