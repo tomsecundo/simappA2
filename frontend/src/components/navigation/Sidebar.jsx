@@ -33,12 +33,7 @@ const Sidebar = ({ activeItem, setActiveItem, isOpen, closeSidebar }) => {
                 { label: 'Create Program', path: '/programs/new' },
             ],
         },
-        {
-            label: 'Mentors',
-            children: [
-                { label: 'All Mentors', path: '/mentor' },
-            ],
-        },
+        { label: 'Mentors', path: '/mentor' },
         {
             label: 'Availability',
             children: [
