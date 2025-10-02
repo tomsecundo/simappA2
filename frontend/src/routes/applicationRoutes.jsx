@@ -15,7 +15,7 @@ const applicationRoutes = [
     key="applications-apply"
     path="/applications/apply"
     element={
-      <RequireRole allowedRoles={[UserRole.STARTUP]}>
+      <RequireRole>
         <ApplicationForm />
       </RequireRole>
     }

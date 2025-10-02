@@ -12,7 +12,7 @@ const reportRoutes = [
     key="report-new"
     path="/reports/new"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN]}>
+      <RequireRole>
         <ReportForm />
       </RequireRole>
     }
@@ -22,7 +22,7 @@ const reportRoutes = [
     key="progress-new"
     path="/progress/new"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN]}>
+      <RequireRole>
         <ProgressForm />
       </RequireRole>
     }

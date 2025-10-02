@@ -12,7 +12,7 @@ const programRoutes = [
     key="programs-new"
     path="/programs/new"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN]}>
+      <RequireRole>
         <ProgramForm />
       </RequireRole>
     }
@@ -21,7 +21,7 @@ const programRoutes = [
     key="programs-view"
     path="/programs/:id"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN]}>
+      <RequireRole>
         <ProgramDetail />
       </RequireRole>
     }
@@ -30,7 +30,7 @@ const programRoutes = [
     key="programs-edit"
     path="/programs/:id/edit"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN]}>
+      <RequireRole>
         <ProgramForm />
       </RequireRole>
     }

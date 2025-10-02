@@ -10,7 +10,7 @@ const sessionRoutes = [
     key="session-new"
     path="/sessions/new"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN, UserRole.MENTOR]}>
+      <RequireRole>
         <SessionForm />
       </RequireRole>
     }

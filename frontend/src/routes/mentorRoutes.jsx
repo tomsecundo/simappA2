@@ -10,7 +10,7 @@ const mentorRoutes = [
     key="mentor-update"
     path="/mentor/update/:id"
     element={
-      <RequireRole allowedRoles={[UserRole.ADMIN]}>
+      <RequireRole>
         <UpdateMentor />
       </RequireRole>
     }
