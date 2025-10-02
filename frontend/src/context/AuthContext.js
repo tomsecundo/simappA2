@@ -43,6 +43,12 @@ export const AuthProvider = ({ children }) => {
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
+    // Update user state (e.g., after profile edit)
+    const updateUser = (newUserData) => {
+        setUser(newUserData);
+        localStorage.setItem('user', JSON.stringify(newUserData));
+    };
+
     // Role check helper functions
     const hasRole = (requiredRole) => user && user.role === requiredRole;
     const hasAnyRole = (requiredRoles) => user && requiredRoles.includes(user.role);
@@ -63,6 +69,7 @@ export const AuthProvider = ({ children }) => {
                 login, 
                 logout, 
                 getAuthHeaders,
+                updateUser,
                 isAdmin,
                 isMentor,
                 isStartup,
