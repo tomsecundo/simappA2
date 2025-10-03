@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const MentorRepo = require('../repositories/MentorRepo');
 const UserRepo = require('../repositories/UserRepo');
 const { UserRole } = require('../models/UserModel');
-const MentorFactory = require('../domain/factories/MentorFactory');
+const MentorFactory = require('../domain/factory/MentorFactory');
 
 class MentorController {
 

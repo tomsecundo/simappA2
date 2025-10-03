@@ -3,9 +3,10 @@ const Application = require("../domain/ApplicationDomain");
 const ApplicationRepo = require('../repositories/ApplicationRepo');
 const ProgramRepo = require('../repositories/ProgramRepo');
 const { ApplicationStatus } = require('../models/ApplicationModel');
-const { UserRole } = require('../models/UserModel');
+const ApplicationFactory = require('../domain/factory/ApplicationFactory');
 
 class ApplicationController {
+    /** Create new application */
     async create(req, res, next) {
         try {
             const timestamp = Date.now().toString().slice(-6);
@@ -17,6 +18,7 @@ class ApplicationController {
                 applicationId,
                 createdBy: req.user._id 
             });
+
             const saved = await ApplicationRepo.create(application);
             res.status(201).json(saved);
         } catch (error) {
@@ -24,6 +26,7 @@ class ApplicationController {
         }
     }
 
+    /** Get all applications */
     async getAll(req, res, next) {
         try {
             const applications = await ApplicationRepo.findAll();
@@ -33,6 +36,7 @@ class ApplicationController {
         }
     }
 
+    /** Get application by ID */
     async getById(req, res, next) {
         try {
             const application = await ApplicationRepo.findById(req.params.id);
@@ -45,6 +49,7 @@ class ApplicationController {
         }
     }
 
+    /** Get application(s) by User ID */
     async getByUserId(req, res, next) {
         try {
             const application = await ApplicationRepo.findByCreatedBy(req.params.id);
@@ -57,56 +62,42 @@ class ApplicationController {
         }
     }
 
+    /** Get applications by Program ID (with Role + Status strategies) */
     async getByProgramId(req, res, next) {
         try {
             const programId = req.params.programId || req.params.id;
-
-            // Ensure program exists
             const program = await ProgramRepo.findById(programId);
+
             if (!program) {
                 return res.status(404).json({ message: "Program not found" });
             }
 
-            let applications;
+            // 1. Pick role strategy
+            const roleStrategy = ApplicationFactory.createRoleStrategy(req.user.role);
 
-            if (req.user.role === UserRole.ADMIN || req.user.role === UserRole.MENTOR) {
-                // Admin sees all
-                applications = await ApplicationRepo.findByProgramId(programId);
+            // 2. Pick status strategy (optional query ?status=Accepted)
+            const statusStrategy = ApplicationFactory.createStatusStrategy(req.query.status);
 
-            } 
-            // else if (req.user.role === UserRole.MENTOR) {
-            //     // Mentor must be assigned to program
-            //     const isAssigned = program.mentors.some(
-            //         (m) => m.toString() === req.user._id.toString()
-            //     );
-            //     if (!isAssigned) {
-            //         return res.status(403).json({ message: "Access denied: not assigned to this program" });
-            //     }
-                    
-            //     applications = await ApplicationRepo.findByProgramId(programId);
-            // } 
-            else if (req.user.role === UserRole.STARTUP) {
-                // Startup sees only their applications
-                applications = await ApplicationRepo.findByProgramId(programId);
-                applications = applications.filter(
-                    (app) => app.createdBy._id.toString() === req.user._id.toString()
-                );
-            } else {
-                return res.status(403).json({ message: "Invalid role" });
-            }
+            // 3. Delegate to strategy
+            const applications = await roleStrategy.getApplications(programId, req.user, program, statusStrategy);
 
             if (!applications || applications.length === 0) {
                 return res.status(404).json({ message: "No applications found for this program" });
             }
+
             res.json(applications);
         } catch (error) {
+            if (error.message.includes("Access denied")) {
+                return res.status(403).json({ message: error.message });
+            }
             next(error);
         }
     }
 
+    /** Update application data */
     async update(req, res, next) {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const data = req.body;
             
             const application = await ApplicationRepo.findById(id);
@@ -114,7 +105,7 @@ class ApplicationController {
                 return res.status(404).json({ message: "Application not found" });
             }
 
-            if(![ApplicationStatus.PENDING, ApplicationStatus.UNDER_REVIEW].includes(application.status)) {
+            if (![ApplicationStatus.PENDING, ApplicationStatus.UNDER_REVIEW].includes(application.status)) {
                 return res.status(400).json({
                     message: `Application cannot be edited because it is already ${application.status}`,
                 });
@@ -127,6 +118,7 @@ class ApplicationController {
         }
     }
 
+    /** Update application status */
     async updateApplicationStatus(req, res, next) {
         try {
             const { id } = req.params;
@@ -146,6 +138,7 @@ class ApplicationController {
         }
     }
 
+    /** Delete application */
     async delete(req, res, next) {
         try {
             const deleted = await ApplicationRepo.delete(req.params.id);

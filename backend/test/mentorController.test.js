@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const mongoose = require('mongoose');
 const mentorController = require('../controllers/mentorController');
 const MentorRepo = require('../repositories/MentorRepo');
-const MentorFactory = require('../domain/factories/MentorFactory');
+const MentorFactory = require('../domain/factory/MentorFactory');
 const { UserRole } = require('../models/UserModel');
 
 const { expect } = chai;

@@ -5,7 +5,7 @@ const userController = require('../controllers/userController');
 const UserRepo = require('../repositories/UserRepo');
 const MentorRepo = require('../repositories/MentorRepo');
 const { UserRole } = require('../models/UserModel');
-const UserFactory = require('../domain/factories/UserFactory');
+const UserFactory = require('../domain/factory/UserFactory');
 
 const { expect } = chai;
 
