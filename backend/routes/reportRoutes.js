@@ -9,6 +9,7 @@ const {
     deleteReport
 } = require('../controllers/reportController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 // Public route for submitting applications
 router.get('/', getAllReports);

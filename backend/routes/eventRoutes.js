@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const EventController = require("../controllers/eventController");
 const { protect } = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 // Create a new event
 router.get("/", protect, EventController.getAllEvents);

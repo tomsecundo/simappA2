@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const MentorRepo = require('../repositories/MentorRepo');
 const UserRepo = require('../repositories/UserRepo');
@@ -155,33 +154,6 @@ class MentorController {
 
             const domainMentor = MentorFactory.createMentor(updatedMentor.toObject());
             res.json(domainMentor);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async changePassword(req, res, next) {
-        try {
-            const { oldPassword, newPassword } = req.body;
-            if (!oldPassword || !newPassword) {
-                return res.status(400).json({ message: 'Both old and new password are required' });
-            }
-
-            const mentor = await MentorRepo.findByIdWithPassword(req.user._id);
-            if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
-
-            const isMatch = await bcrypt.compare(oldPassword, mentor.password);
-            if (!isMatch) return res.status(400).json({ message: 'Old password is incorrect' });
-
-            const hashed = await bcrypt.hash(newPassword, 10);
-            mentor.password = hashed;
-            await mentor.save();
-
-            const domainMentor = MentorFactory.createMentor(mentor.toObject());
-            res.json({ 
-                message: 'Password updated successfully',
-                mentor: domainMentor
-            });
         } catch (error) {
             next(error);
         }

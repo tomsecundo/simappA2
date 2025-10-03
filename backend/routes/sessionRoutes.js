@@ -3,6 +3,7 @@ const router = express.Router();
 const SessionController = require("../controllers/sessionController");
 const validateSession = require("../middleware/validators/validateSession");
 const { protect } = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 // Create a new session
 router.post("/", protect, validateSession, SessionController.create);
