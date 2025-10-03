@@ -1,8 +1,14 @@
 const User = require('../UserDomain');
 const Mentor = require('../MentorDomain');
 const { UserRole } = require('../../models/UserModel');
+const {
+    AdminUserStrategy,
+    MentorUserStrategy,
+    StartupUserStrategy
+} = require('../strategy/UserStrategy');
 
 class UserFactory {
+    /** Domain object creation (existing functionality) */
     static createUser(data) {
         switch (data.role) {
             case UserRole.MENTOR:
@@ -20,6 +26,7 @@ class UserFactory {
                     affiliation: data.affiliation,
                     address: data.address,
                     programs: data.programs || [],
+                    status: data.status || "Active"
                 });
             case UserRole.STARTUP:
             case UserRole.ADMIN:
@@ -33,11 +40,29 @@ class UserFactory {
                     number: data.number,
                     affiliation: data.affiliation,
                     address: data.address,
+                    status: data.status || "Active"
                 });
+                
             default:
                 throw new Error(`Invalid role: ${data.role}`);
         }
     }
+
+    static createRoleStrategy(role) {
+        switch (role) {
+            case UserRole.ADMIN:
+                return new AdminUserStrategy();
+            case UserRole.MENTOR:
+                return new MentorUserStrategy();
+            case UserRole.STARTUP:
+                return new StartupUserStrategy();
+            default:
+                throw new Error(`Invalid role: ${role}`);
+        }
+    }
 }
+
+console.log("User import:", User);
+console.log("Mentor import:", Mentor);
 
 module.exports = UserFactory;

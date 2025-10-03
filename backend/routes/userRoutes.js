@@ -2,23 +2,22 @@ const express = require('express');
 const router = express.Router();
 
 const { UserController, listStartups } = require('../controllers/userController');
-const { protect, hasRole } = require('../middleware/authMiddleware');
-const { UserRole } = require('../models/UserModel');
+const { protect } = require('../middleware/authMiddleware');
 
-//List of startups
+// ---------- Public/Protected Endpoints ---------- //
+router.get('/profile', protect, UserController.getProfile.bind(UserController));
+router.put('/profile', protect, UserController.updateUserProfile.bind(UserController));
+router.put('/change-password', protect, UserController.changePassword.bind(UserController));
 router.get('/startups', protect, listStartups);
 
-router.get('/profile', protect, UserController.getProfile);
-// update current user profile
-router.put('/profile', protect, UserController.updateUserProfile);
-router.put('/change-password', protect, UserController.changePassword);
+// ---------- Strategy-driven Endpoints ---------- //
+router.get('/', protect, UserController.getAllUsers.bind(UserController));
+router.get('/:id', protect, UserController.getUserById.bind(UserController));
 
-// Admin-only
-router.get('/', protect, hasRole(UserRole.ADMIN), UserController.getAllUsers);
-router.get('/:id', protect, hasRole(UserRole.ADMIN), UserController.getUserById);
-// Update user by Admin
-router.put('/:id', protect, hasRole(UserRole.ADMIN), UserController.updateUserByAdmin);
+// Update user (admin or strategy-controlled)
+router.put('/:id', protect, UserController.updateUserByAdmin.bind(UserController));
 
-router.delete('/:id', protect, hasRole(UserRole.ADMIN), UserController.deleteUser);
+// Delete user (admin only for now)
+router.delete('/:id', protect, UserController.deleteUser.bind(UserController));
 
 module.exports = router;

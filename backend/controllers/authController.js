@@ -1,16 +1,15 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const UserFactory = require('../domain/factories/UserFactory')
+const UserFactory = require('../domain/factory/UserFactory');
 const UserRepo = require('../repositories/UserRepo');
 const MentorRepo = require('../repositories/MentorRepo');
 const { UserRole } = require('../models/UserModel');
-
-// const { UserModel } = require('../models/UserModel');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
+/** Register a new user */
 const registerUser = async (req, res) => {
     const {
         name, email, role, password,
@@ -28,9 +27,21 @@ const registerUser = async (req, res) => {
         const userExists = await UserRepo.findByEmail(email);
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
+        // hash password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const userData = { 
-            name: fullName, email, role, password,
-            number, expertise, affiliation, address, firstName, lastName, programs 
+            name: fullName, 
+            email, 
+            role, 
+            password: hashedPassword,
+            number: number && number.trim() !== "" ? number : null,
+            expertise, 
+            affiliation, 
+            address, 
+            firstName, 
+            lastName, 
+            programs 
         };
         
         let saved;
@@ -42,7 +53,6 @@ const registerUser = async (req, res) => {
         
         const domainUser = UserFactory.createUser(saved.toObject());
         
-        // 3. Return response
         return res.status(201).json({
             id: domainUser.id,
             name: domainUser.name,
@@ -58,6 +68,7 @@ const registerUser = async (req, res) => {
     }
 };
 
+/** Login user */
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -67,7 +78,6 @@ const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-        // Pass plain data into factory, not raw mongoose doc
         const domainUser = UserFactory.createUser(user.toObject());
 
         return res.json({ 
