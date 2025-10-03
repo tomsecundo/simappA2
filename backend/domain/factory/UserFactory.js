@@ -62,7 +62,4 @@ class UserFactory {
     }
 }
 
-console.log("User import:", User);
-console.log("Mentor import:", Mentor);
-
 module.exports = UserFactory;

@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const ApplicationController = require("../controllers/applicationController");
 const validateApplication = require("../middleware/validators/validateApplication");
-const { protect, hasRole } = require("../middleware/authMiddleware");
+const { protect } = require("../middleware/authMiddleware");
 const { UserRole } = require('../models/UserModel');
+const roleProxy = require('../middleware/roleProxy');
 
 router.get('/program/:programId', protect, ApplicationController.getByProgramId);
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const AvailabilityController = require("../controllers/availabilityController");
 const validateAvailability = require("../middleware/validators/validateAvailability")
 // const { protect} = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 // Create a new availability
 router.post("/",  validateAvailability, AvailabilityController.create);

@@ -6,6 +6,7 @@ const {
   deleteFeedback 
 } = require('../controllers/feedbackController');
 const { protect } = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 const router = express.Router();
 

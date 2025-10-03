@@ -27,14 +27,11 @@ const registerUser = async (req, res) => {
         const userExists = await UserRepo.findByEmail(email);
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-        // hash password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         const userData = { 
             name: fullName, 
             email, 
             role, 
-            password: hashedPassword,
+            password,
             number: number && number.trim() !== "" ? number : null,
             expertise, 
             affiliation, 

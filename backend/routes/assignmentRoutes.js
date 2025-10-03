@@ -10,6 +10,7 @@ const {
     deleteAssignment
 } = require('../controllers/assignmentController');
 const { protect } = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 const mongoose = require('mongoose');
 

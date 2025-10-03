@@ -9,6 +9,7 @@ const {
     updateProgress
 } = require('../controllers/progressController');
 const { protect } = require('../middleware/authMiddleware');
+const roleProxy = require('../middleware/roleProxy');
 
 // Public route for posting progress
 router.get('/', getAllProgress);

@@ -171,8 +171,6 @@ class UserController {
             const isMatch = await bcrypt.compare(oldPassword, user.password);
             if (!isMatch) return res.status(400).json({ message: 'Old password is incorrect' });
 
-            const hashed = await bcrypt.hash(newPassword, 10);
-            user.password = hashed;
             await user.save();
 
             const domainUser = UserFactory.createUser(user.toObject());
