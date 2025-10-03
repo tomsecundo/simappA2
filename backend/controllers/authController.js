@@ -11,15 +11,15 @@ const generateToken = (id) => {
 
 /** Register a new user */
 const registerUser = async (req, res) => {
-    const {
-        name, email, role, password,
-        number, expertise, affiliation, address,
-        firstName, lastName, programs
-    } = req.body;
-
-    const fullName = name || `${firstName?.trim() || ''} ${lastName?.trim() || ''}`;
-
     try {
+        const {
+            name, email, role, password,
+            number, expertise, affiliation, address,
+            firstName, lastName, programs,
+        } = req.body;
+
+        const fullName = name || `${firstName?.trim() || ''} ${lastName?.trim() || ''}`;
+
         if (!fullName || !email || !password || !role) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
