@@ -3,7 +3,7 @@ name: Startup Incubation App CI
 on:
   push:
     branches:
-    - main # Trigger CI on pushes on the main branch
+      - main # Trigger CI on pushes on the main branch
 
 jobs:
   test:
@@ -73,3 +73,4 @@ jobs:
     - name: restart PM2 processes
 
       run: pm2 restart all
+
